@@ -53,7 +53,7 @@ def webhook(request):
         text = update['message']['text']
 
         if text[0] == "/":
-            command(text[1:].split(" "), chat_id, update['message']['from']['username'])
+            send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
         else:
             users = ChatMember.objects.exclude(username=update['message']['from']['username'])
 
@@ -70,8 +70,12 @@ def webhook(request):
     return HttpResponse()
 
 
-def command(args, chat_id, sender):
-    if args[0] == "add" and args[1] != "":
+def send_command(args, chat_id, sender):
+
+    # there might be @BrianTrustBot afterwards
+    command = args[0].split("@")[0]
+
+    if command == "add" and args[1] != "":
         try:
             member = ChatMember(username=args[1])
             member.save()
@@ -79,7 +83,7 @@ def command(args, chat_id, sender):
         except IntegrityError:
             bot.sendMessage(chat_id=chat_id, text="@%s: %s is already in the group." % (sender, args[1]))
 
-    elif args[0] == "remove" and args[1] != "":
+    elif command == "remove" and args[1] != "":
         try:
             member = ChatMember.objects.get(username=args[1])
             member.delete()
