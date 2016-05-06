@@ -22,5 +22,10 @@ def set_webhook(request):
 @csrf_exempt
 def webhook(request):
     print("BODY = " + str(request.body))
+    try:
+        update = json.loads(str(request.body))
+        print("json = " + str(update))
+    except Exception as e:
+        print(e)
 
     return HttpResponse("success?")
