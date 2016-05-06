@@ -6,6 +6,7 @@ import telegram
 import requests
 
 # Create your views here.
+from django.views.decorators.csrf import csrf_exempt
 
 API_KEY = "167262782:AAFZohXUGULwNp_0x8Bh-s_AWkEaT0t0VLQ"
 
@@ -20,6 +21,7 @@ def set_webhook(request):
         return HttpResponse("Failed to set webhook")
 
 
+@csrf_exempt
 def webhook(request):
     update = json.loads(request.body)
     chat_id = update.message.chat.id
