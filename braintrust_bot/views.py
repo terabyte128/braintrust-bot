@@ -25,3 +25,4 @@ def webhook(request):
     chat_id = update.message.chat.id
 
     bot.sendMessage(chat_id, request.body)
+    return HttpResponse("success?")
