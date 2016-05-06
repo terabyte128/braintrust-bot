@@ -94,8 +94,7 @@ def send_command(args, chat_id, sender):
 
     elif command == "members":
         users = ChatMember.objects.filter(chat_id=chat_id)
-        formatted_users = [user.username for user in users]
-        bot.sendMessage(chat_id=chat_id, text="Users in group: " % (", ".join(formatted_users)))
+        bot.sendMessage(chat_id=chat_id, text="Users in group: " % (", ".join(users)))
 
     else:
         bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
