@@ -24,7 +24,7 @@ def webhook(request):
     print("BODY = " + str(request.body))
     try:
         update = json.loads(str(request.body))
-        print("json = " + str(update))
+        print("json = " + update)
     except Exception as e:
         print(e)
 
