@@ -62,7 +62,7 @@ def webhook(request):
             message_text = "%s called together the Brain Trust: %s" \
                            % (update['message']['from']['first_name'], ", ".join(formatted_users))
 
-            bot.sendMessage(chat_id=chat_id, message=message_text, reply_to_message=update['message']['message_id'])
+            bot.sendMessage(chat_id=chat_id, text=message_text, reply_to_message=update['message']['message_id'])
 
     except Exception as e:
         print("error: " + str(e))
@@ -75,19 +75,19 @@ def command(args, chat_id, sender):
         try:
             member = ChatMember(username=args[1])
             member.save()
-            bot.sendMessage(chat_id=chat_id, message="@%s: %s was successfully added to the group." % (sender, args[1]))
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully added to the group." % (sender, args[1]))
         except IntegrityError:
-            bot.sendMessage(chat_id=chat_id, message="@%s: %s is already in the group." % (sender, args[1]))
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s is already in the group." % (sender, args[1]))
 
     if args[0] == "remove" and args[1] != "":
         try:
             member = ChatMember.objects.get(username=args[1])
             member.delete()
-            bot.sendMessage(chat_id=chat_id, message="@%s: %s was successfully deleted from the group."
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully deleted from the group."
                                                      % (sender, args[1]))
         except ChatMember.DoesNotExist:
-            bot.sendMessage(chat_id=chat_id, message="@%s: %s is not in the group." % (sender, args[1]))
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s is not in the group." % (sender, args[1]))
 
     else:
-        bot.sendMessage(chat_id=chat_id, message="@%s: Command not found." % sender)
+        bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
 
