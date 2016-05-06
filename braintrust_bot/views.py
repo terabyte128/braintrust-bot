@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 from braintrust_bot.models import ChatMember
-from django_braintrust_bot.local_settings import API_KEY
+from django_braintrust_bot.settings import API_KEY
 
 bot = telegram.Bot(token=API_KEY)
 
@@ -26,27 +26,30 @@ def set_webhook(request):
 
 @csrf_exempt
 def webhook(request):
-    try:
-        update = json.loads(request.body.decode('utf-8'))
-        chat_id = update['message']['chat']['id']
-        text = update['message']['text']
+    if request.GET.get('API_KEY') == API_KEY:
+        try:
+            update = json.loads(request.body.decode('utf-8'))
+            chat_id = update['message']['chat']['id']
+            text = update['message']['text']
 
-        if text[0] == "/":
-            send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
-        else:
-            users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
+            if text[0] == "/":
+                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
+            else:
+                users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
 
-            formatted_users = ["@" + user.username for user in users]
+                formatted_users = ["@" + user.username for user in users]
 
-            message_text = "%s called together the Brain Trust: %s" \
-                           % (update['message']['from']['first_name'], ", ".join(formatted_users))
+                message_text = "%s called together the Brain Trust: %s" \
+                               % (update['message']['from']['first_name'], ", ".join(formatted_users))
 
-            bot.sendMessage(chat_id=chat_id, text=message_text, reply_to_message_id=update['message']['message_id'])
+                bot.sendMessage(chat_id=chat_id, text=message_text, reply_to_message_id=update['message']['message_id'])
 
-    except Exception as e:
-        print("error: " + str(e))
+        except Exception as e:
+            print("error: " + str(e))
 
-    return HttpResponse()
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=401)
 
 
 def send_command(args, chat_id, sender):
