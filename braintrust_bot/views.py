@@ -92,6 +92,11 @@ def send_command(args, chat_id, sender):
         except ChatMember.DoesNotExist:
             bot.sendMessage(chat_id=chat_id, text="@%s: %s is not in the group." % (sender, args[1]))
 
+    elif command == "members":
+        users = ChatMember.objects.filter(chat_id=chat_id)
+        formatted_users = [user.username for user in users]
+        bot.sendMessage(chat_id=chat_id, text="Users in group: " % (", ".join(formatted_users)))
+
     else:
         bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
 
