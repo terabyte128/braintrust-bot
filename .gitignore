@@ -1,4 +1,3 @@
-django_braintrust_bot/local_settings.py
 *.pyc
 db.sqlite3
 .idea/*
