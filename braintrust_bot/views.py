@@ -1,13 +1,13 @@
 import json
-import telegram
 
+import telegram
+from django.db import IntegrityError
 from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db import IntegrityError
 
 # Create your views here.
 from braintrust_bot.models import ChatMember
-from local_settings import API_KEY
+from django_braintrust_bot.local_settings import API_KEY
 
 bot = telegram.Bot(token=API_KEY)
 
