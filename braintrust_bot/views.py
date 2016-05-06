@@ -55,7 +55,7 @@ def webhook(request):
         if text[0] == "/":
             send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
         else:
-            users = ChatMember.objects.exclude(username=update['message']['from']['username'])
+            users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
 
             formatted_users = ["@" + user.username for user in users]
 
@@ -77,7 +77,7 @@ def send_command(args, chat_id, sender):
 
     if command == "add" and args[1] != "":
         try:
-            member = ChatMember(username=args[1])
+            member = ChatMember(username=args[1], chat_id=chat_id)
             member.save()
             bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully added to the group." % (sender, args[1]))
         except IntegrityError:

@@ -9,3 +9,6 @@ class ChatMember(models.Model):
 
     class Meta:
         unique_together = ('username', 'chat_id')
+
+    def __str__(self):
+        return self.username + "@" + str(self.chat_id)
