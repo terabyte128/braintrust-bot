@@ -5,4 +5,5 @@ __author__ = 'Sam'
 
 urlpatterns = [
     url(r'^set_webhook', views.set_webhook, name="set_webhook"),
+    url(r'^webhook', views.set_webhook, name="webbook"),
 ]

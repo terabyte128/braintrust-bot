@@ -1,3 +1,5 @@
+import json
+
 from django.http.response import HttpResponse
 from django.shortcuts import render
 import telegram
@@ -17,3 +19,9 @@ def set_webhook(request):
     else:
         return HttpResponse("Failed to set webhook")
 
+
+def webhook(request):
+    update = json.loads(request.body)
+    chat_id = update.message.chat.id
+
+    bot.sendMessage(chat_id, request.body)
