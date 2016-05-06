@@ -62,7 +62,7 @@ def webhook(request):
             message_text = "%s called together the Brain Trust: %s" \
                            % (update['message']['from']['first_name'], ", ".join(formatted_users))
 
-            bot.sendMessage(chat_id=chat_id, text=message_text, reply_to_message=update['message']['message_id'])
+            bot.sendMessage(chat_id=chat_id, text=message_text, reply_to_message_id=update['message']['message_id'])
 
     except Exception as e:
         print("error: " + str(e))
