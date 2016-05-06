@@ -12,6 +12,10 @@ from django_braintrust_bot.local_settings import API_KEY
 bot = telegram.Bot(token=API_KEY)
 
 
+def index(request):
+    return HttpResponse("BrainTrust Bot 2.0")
+
+
 def set_webhook(request):
     if request.GET.get('url'):
         bot.setWebhook(request.GET.get('url'))
