@@ -1,12 +1,10 @@
 import json
 
 from django.http.response import HttpResponse
-from django.shortcuts import render
 import telegram
-import requests
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
-from django.views.decorators.csrf import csrf_exempt
 
 API_KEY = "167262782:AAFZohXUGULwNp_0x8Bh-s_AWkEaT0t0VLQ"
 
