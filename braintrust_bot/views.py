@@ -7,8 +7,7 @@ from django.db import IntegrityError
 
 # Create your views here.
 from braintrust_bot.models import ChatMember
-
-API_KEY = "167262782:AAFZohXUGULwNp_0x8Bh-s_AWkEaT0t0VLQ"
+from local_settings import API_KEY
 
 bot = telegram.Bot(token=API_KEY)
 
@@ -19,30 +18,6 @@ def set_webhook(request):
         return HttpResponse("Webhook successfully set to %s" % request.GET.get('url'))
     else:
         return HttpResponse("Failed to set webhook")
-
-'''
-{
-   'update_id':130689848,
-   'message':{
-      'message_id':106,
-      'from':{
-         'first_name':'Sam',
-         'id':147524383,
-         'last_name':'Wolfson',
-         'username':'SamWolfson'
-      },
-      'text':'fff',
-      'chat':{
-         'first_name':'Sam',
-         'id':147524383,
-         'last_name':'Wolfson',
-         'username':'SamWolfson',
-         'type':'private'
-      },
-      'date':1462522610
-   }
-}
-'''
 
 
 @csrf_exempt

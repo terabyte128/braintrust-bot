@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*zj1038uddme#1q8w9%b5=^t0sro-ti)#3fa#_6g*09ry*w@6-'
+SECRET_KEY = 'DEBUG-KEY-BEEP-BOOP'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -122,6 +122,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Update database configuration with $DATABASE_URL.
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+from local_settings import *
+
