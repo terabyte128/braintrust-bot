@@ -22,7 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'DEBUG-KEY-BEEP-BOOP'
+SECRET_KEY = 'SOME SECRET KEY'
+API_KEY = "ENTER API KEY HERE"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -135,7 +136,11 @@ if 'ON_HEROKU' in os.environ:
     db_from_env = dj_database_url.config(conn_max_age=500)
     DATABASES['default'].update(db_from_env)
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    API_KEY = os.environ['TELEGRAM_API_KEY']
+
+    ALLOWED_HOSTS = [
+        'braintrust-bot.herokuapp.com'
+    ]
+
+    DEBUG = False
