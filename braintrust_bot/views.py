@@ -21,8 +21,6 @@ def set_webhook(request):
 
 @csrf_exempt
 def webhook(request):
-    update = json.loads(str(request.body))
-    chat_id = update.message.chat.id
+    print("BODY = " + str(request.body))
 
-    bot.sendMessage(chat_id, update)
     return HttpResponse("success?")
