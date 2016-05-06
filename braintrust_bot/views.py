@@ -44,12 +44,13 @@ def set_webhook(request):
 }
 '''
 
+
 @csrf_exempt
 def webhook(request):
     try:
         update = json.loads(request.body.decode('utf-8'))
         chat_id = update['message']['chat']['id']
-        text = update.message.text
+        text = update['message']['text']
 
         if text[0] == "/":
             command(text[1:].split(" "), chat_id, update['message']['from']['username'])
