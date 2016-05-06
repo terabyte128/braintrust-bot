@@ -48,7 +48,7 @@ def set_webhook(request):
 def webhook(request):
     try:
         update = json.loads(request.body.decode('utf-8'))
-        chat_id = update['message']['chat']['jd']
+        chat_id = update['message']['chat']['id']
         text = update.message.text
 
         if text[0] == "/":
@@ -64,7 +64,7 @@ def webhook(request):
             bot.sendMessage(chat_id=chat_id, message=message_text, reply_to_message=update['message']['message_id'])
 
     except Exception as e:
-        print(e)
+        print("error: " + str(e))
 
     return HttpResponse()
 
