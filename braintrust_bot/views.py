@@ -41,21 +41,21 @@ def webhook(request):
             # if the message starts with a /, it's a command, so handle it
             if text[0] == "/":
                 send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
-            
+
             # otherwise, just send a reply with everyone tagged from the chat group
             else:
                 # get users for group, except message sender
                 users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
-                
+
                 # format as list starting with @, required for tagging usernames
                 formatted_users = ["@" + user.username for user in users]
 
                 # send message as reply with comma-separated list of tagged users
-                message_text = "%s called together the Brain Trust: %s" \
-                               % (update['message']['from']['first_name'], ", ".join(formatted_users))
+                message_text = "Brain Trust, asseble! %s\n\n%s: %s" \
+                               % (", ".join(formatted_users), update['message']['from']['first_name'], text)
 
                 # go go gadget send message!
-                bot.sendMessage(chat_id=chat_id, text=message_text, reply_to_message_id=update['message']['message_id'])
+                bot.sendMessage(chat_id=chat_id, text=message_text)
 
         # catch all - probably bad practice
         except Exception as e:
@@ -111,4 +111,3 @@ def send_command(args, chat_id, sender):
     # otherwise it's not a real command :(
     else:
         bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
-
