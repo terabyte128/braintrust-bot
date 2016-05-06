@@ -1,4 +1,4 @@
-# braintrust-bot
+# Braintrust Bot
 Telegram bot for summoning your Brain Trust.
 
 A simple Telegram bot that allows you to summon all members in a chat group at once. 
