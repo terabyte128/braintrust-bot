@@ -58,25 +58,25 @@ def send_command(args, chat_id, sender):
     command = args[0].split("@")[0]
 
     if command == "add" and args[1]:
-        try:
-            member_str = args[1][1:] if args[1][0] == "@" else args[1]
+        member_str = args[1][1:] if args[1][0] == "@" else args[1]
 
+        try:
             member = ChatMember(username=member_str, chat_id=chat_id)
             member.save()
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully added to the group." % (sender, args[1]))
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully added to the group." % (sender, member_str))
         except IntegrityError:
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s is already in the group." % (sender, args[1]))
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s is already in the group." % (sender, member_str))
 
     elif command == "remove" and args[1]:
-        try:
-            member_str = args[1][1:] if args[1][0] == "@" else args[1]
+        member_str = args[1][1:] if args[1][0] == "@" else args[1]
 
+        try:
             member = ChatMember.objects.get(username=member_str)
             member.delete()
             bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully deleted from the group."
-                                                     % (sender, args[1]))
+                                                     % (sender, member_str))
         except ChatMember.DoesNotExist:
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s is not in the group." % (sender, args[1]))
+            bot.sendMessage(chat_id=chat_id, text="@%s: %s is not in the group." % (sender, member_str))
 
     elif command == "members":
         users = ChatMember.objects.filter(chat_id=chat_id)
