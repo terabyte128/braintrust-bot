@@ -23,7 +23,7 @@ def set_webhook(request):
 def webhook(request):
     print("BODY = " + str(request.body))
     try:
-        update = json.loads(str(request.body))
+        update = json.loads(request.body.decode('utf-8'))
         print("json = " + update)
     except Exception as e:
         print(e)
