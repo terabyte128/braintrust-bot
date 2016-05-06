@@ -28,9 +28,11 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/django_braintrust_bot/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="125" column="40" selection-start-line="125" selection-start-column="40" selection-end-line="125" selection-end-column="40" />
-              <folding />
+            <state relative-caret-position="-1305">
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+              <folding>
+                <element signature="e#322#344#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -329,9 +331,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/django_braintrust_bot/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="125" column="40" selection-start-line="125" selection-start-column="40" selection-end-line="125" selection-end-column="40" />
-          <folding />
+        <state relative-caret-position="-1305">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding>
+            <element signature="e#322#344#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
