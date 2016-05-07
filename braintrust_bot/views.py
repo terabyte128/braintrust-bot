@@ -1,4 +1,5 @@
 import json
+import random
 
 import telegram
 from django.db import IntegrityError
@@ -6,7 +7,7 @@ from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
-from braintrust_bot.models import ChatMember
+from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage
 from django_braintrust_bot.settings import API_KEY
 
 # initialize the bot for all views
@@ -110,6 +111,56 @@ def send_command(args, chat_id, sender):
 
         bot.sendMessage(chat_id=chat_id, text="Members in group: %s" % (", ".join(formatted_users)))
 
+    elif command == "quotes":
+        if args[1] == "enable" or args[1] == "disable":
+            try:
+                quote_chat = QuoteChat.objects.get(chat_id=chat_id)
+            except QuoteChat.DoesNotExist:
+                quote_chat = QuoteChat(chat_id=chat_id)
+
+            quote_chat.quotes_enabled = (args[1] == "enable")
+            quote_chat.save()
+            bot.sendMessage(chat_id=chat_id, text="Quotes %s." % "enabled" if quote_chat.quotes_enabled else "disabled")
+        else:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /quotes [enable/disable]")
+
+    elif command == "sendquote":
+        not_command = " ".join(args[1:])
+        split = not_command.split(" && ")
+
+        try:
+            quote = split[0]
+            author = split[1]
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text='Usage: /sendquote quote && author [&& context]')
+            return
+
+        try:
+            context = split[2]
+        except IndexError:
+            context = ""
+
+        new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context)
+        new_quote.save()
+        bot.sendMessage(chat_id=chat_id, text="Quote saved successfully.")
+
+    elif command == "getquote":
+        random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat_id).count() - 1)
+        random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
+
+        quote = generate_quote(random_obj)
+
+        bot.sendMessage(chat_id=chat_id, quote=quote)
+
     # otherwise it's not a real command :(
     else:
         bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
+
+
+# returns an HTML-formatted quote
+def generate_quote(quote):
+    text = "<i>\"%s\"</i>\n\n<strong>  - %s %4d</strong>" % (quote.text, quote.author, quote.timestamp.year)
+    if quote.context != "":
+        text += " (%s)" % quote.context
+
+    return text

@@ -125,6 +125,8 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
+API_KEY = os.environ['TELEGRAM_API_KEY']
+
 # database and static file settings are a bit different on heroku
 if 'ON_HEROKU' in os.environ:
     # Simplified static file serving.
@@ -137,7 +139,6 @@ if 'ON_HEROKU' in os.environ:
     DATABASES['default'].update(db_from_env)
 
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    API_KEY = os.environ['TELEGRAM_API_KEY']
 
     ALLOWED_HOSTS = [
         'braintrust-bot.herokuapp.com'
