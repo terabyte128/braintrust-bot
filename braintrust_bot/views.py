@@ -51,7 +51,7 @@ def webhook(request):
                 formatted_users = ["@" + user.username for user in users]
 
                 # send message as reply with comma-separated list of tagged users
-                message_text = "_Brain Trust, assemble! %s_\n\n*%s*: %s" \
+                message_text = "_Brain Trust, assemble!_ %s\n\n*%s*: %s" \
                                % (", ".join(formatted_users),
                                update['message']['from']['first_name'],
                                text.replace("@BrainTrustBot", "").strip())
