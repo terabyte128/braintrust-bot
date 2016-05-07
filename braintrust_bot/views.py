@@ -51,13 +51,13 @@ def webhook(request):
                 formatted_users = ["@" + user.username for user in users]
 
                 # send message as reply with comma-separated list of tagged users
-                message_text = "_Brain Trust, assemble!_ %s\n\n*%s*: %s" \
+                message_text = "<i>Brain Trust, assemble!</i> %s\n\n<strong>%s</strong>: %s" \
                                % (", ".join(formatted_users),
                                update['message']['from']['first_name'],
                                text.replace("@BrainTrustBot", "").strip())
 
                 # go go gadget send message!
-                bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="Markdown")
+                bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
 
         # catch all - probably bad practice
         except Exception as e:
