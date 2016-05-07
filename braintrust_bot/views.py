@@ -150,7 +150,7 @@ def send_command(args, chat_id, sender):
 
         quote = generate_quote(random_obj)
 
-        bot.sendMessage(chat_id=chat_id, text=quote)
+        bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
 
     # otherwise it's not a real command :(
     else:
@@ -159,7 +159,7 @@ def send_command(args, chat_id, sender):
 
 # returns an HTML-formatted quote
 def generate_quote(quote):
-    text = "<i>\"%s\"</i>\n\n<strong>  - %s %4d</strong>" % (quote.text, quote.author, quote.timestamp.year)
+    text = "<i>\"%s\"</i>\n\n<strong>&nbsp;&nbsp;- %s %4d</strong>" % (quote.text, quote.author, quote.timestamp.year)
     if quote.context != "":
         text += " (%s)" % quote.context
 
