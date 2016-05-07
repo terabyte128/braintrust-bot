@@ -161,6 +161,6 @@ def send_command(args, chat_id, sender):
 def generate_quote(quote):
     text = "<i>\"%s\"</i>\n<strong> - %s %4d</strong>" % (quote.text, quote.author, quote.timestamp.year)
     if quote.context != "":
-        text += "\n(%s)" % quote.context
+        text += " (%s)" % quote.context
 
     return text
