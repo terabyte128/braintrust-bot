@@ -112,7 +112,7 @@ def send_command(args, chat_id, sender):
         bot.sendMessage(chat_id=chat_id, text="Members in group: %s" % (", ".join(formatted_users)))
 
     elif command == "quotes":
-        if args[1] == "enable" or args[1] == "disable":
+        if args[1] and (args[1] == "enable" or args[1] == "disable"):
             try:
                 quote_chat = QuoteChat.objects.get(chat_id=chat_id)
             except QuoteChat.DoesNotExist:
@@ -120,7 +120,7 @@ def send_command(args, chat_id, sender):
 
             quote_chat.quotes_enabled = (args[1] == "enable")
             quote_chat.save()
-            bot.sendMessage(chat_id=chat_id, text="Quotes %s." % "enabled" if quote_chat.quotes_enabled else "disabled")
+            bot.sendMessage(chat_id=chat_id, text="Quotes %s." % ("enabled" if quote_chat.quotes_enabled else "disabled"))
         else:
             bot.sendMessage(chat_id=chat_id, text="Usage: /quotes [enable/disable]")
 
@@ -150,7 +150,7 @@ def send_command(args, chat_id, sender):
 
         quote = generate_quote(random_obj)
 
-        bot.sendMessage(chat_id=chat_id, quote=quote)
+        bot.sendMessage(chat_id=chat_id, text=quote)
 
     # otherwise it's not a real command :(
     else:
