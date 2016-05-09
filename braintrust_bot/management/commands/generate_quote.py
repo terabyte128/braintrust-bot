@@ -11,17 +11,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            random_idx = random.randint(0, QuoteStorage.objects.all().count() - 1)
-            random_obj = QuoteStorage.objects.all()[random_idx]
-
-            quote = generate_quote(random_obj)
-
             # initialize the bot for all views
             bot = telegram.Bot(token=API_KEY)
 
-            chat = QuoteChat.objects.get(chat_id=random_obj.chat_id)
+            chats = QuoteChat.objects.fiter(quotes_enable=True)
 
-            if chat.quotes_enabled:
-                bot.sendMessage(chat_id=random_obj.chat_id, text=quote, parse_mode="HTML")
-        except Exception:
-            pass
+            for chat in chats:
+                random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat.chat_id).count() - 1)
+                random_quote = QuoteStorage.objects.filter(chat_id=chat.chat_id)[random_idx]
+
+                quote = generate_quote(random_quote)
+                bot.sendMessage(chat_id=chat.chat_id, text=quote, parse_mode="HTML")
+
+        except Exception as e:
+            print("Something went wrong with sending quote: " + str(e))
