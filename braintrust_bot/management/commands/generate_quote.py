@@ -14,7 +14,7 @@ class Command(BaseCommand):
             # initialize the bot for all views
             bot = telegram.Bot(token=API_KEY)
 
-            chats = QuoteChat.objects.fiter(quotes_enabled=True)
+            chats = QuoteChat.objects.filter(quotes_enabled=True)
 
             for chat in chats:
 
