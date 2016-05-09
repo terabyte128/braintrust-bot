@@ -14,14 +14,17 @@ class Command(BaseCommand):
             # initialize the bot for all views
             bot = telegram.Bot(token=API_KEY)
 
-            chats = QuoteChat.objects.fiter(quotes_enable=True)
+            chats = QuoteChat.objects.fiter(quotes_enabled=True)
 
             for chat in chats:
-                random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat.chat_id).count() - 1)
-                random_quote = QuoteStorage.objects.filter(chat_id=chat.chat_id)[random_idx]
 
-                quote = generate_quote(random_quote)
-                bot.sendMessage(chat_id=chat.chat_id, text=quote, parse_mode="HTML")
+                # 50/50 chance every day
+                if randint(0, 1) == 1:
+                    random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat.chat_id).count() - 1)
+                    random_quote = QuoteStorage.objects.filter(chat_id=chat.chat_id)[random_idx]
+
+                    quote = generate_quote(random_quote)
+                    bot.sendMessage(chat_id=chat.chat_id, text=quote, parse_mode="HTML")
 
         except Exception as e:
             print("Something went wrong with sending quote: " + str(e))
