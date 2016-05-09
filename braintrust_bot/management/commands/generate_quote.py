@@ -19,7 +19,7 @@ class Command(BaseCommand):
             for chat in chats:
 
                 # 50/50 chance every day
-                if randint(0, 1) == 1:
+                if random.randint(0, 1) == 1:
                     random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat.chat_id).count() - 1)
                     random_quote = QuoteStorage.objects.filter(chat_id=chat.chat_id)[random_idx]
 
