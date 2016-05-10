@@ -1,5 +1,6 @@
 import json
 import random
+import traceback
 
 import telegram
 from django.db import IntegrityError
@@ -62,7 +63,9 @@ def webhook(request):
 
         # catch all - probably bad practice
         except Exception as e:
-            print("error: " + str(e))
+            print("An exception occured.")
+            print(traceback.format_exc())
+
 
         # request was OK, so return 200
         return HttpResponse(status=200)
