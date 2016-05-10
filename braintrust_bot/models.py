@@ -5,7 +5,7 @@ from django.db import models
 
 class ChatMember(models.Model):
     username = models.TextField(max_length=100, null=False, blank=False)
-    chat_id = models.IntegerField(null=False, blank=False)
+    chat_id = models.BigIntegerField(null=False, blank=False)
 
     class Meta:
         unique_together = ('username', 'chat_id')
@@ -15,7 +15,7 @@ class ChatMember(models.Model):
 
 
 class QuoteStorage(models.Model):
-    chat_id = models.IntegerField(null=False, blank=False)
+    chat_id = models.BigIntegerField(null=False, blank=False)
     text = models.TextField(max_length=500, null=False, blank=False)
     context = models.TextField(max_length=500, blank=True)
     author = models.TextField(max_length=100, null=False, blank=False)
@@ -26,7 +26,7 @@ class QuoteStorage(models.Model):
 
 
 class QuoteChat(models.Model):
-    chat_id = models.IntegerField(null=False, blank=False, unique=True)
+    chat_id = models.BigIntegerField(null=False, blank=False, unique=True)
     quotes_enabled = models.BooleanField(default=False)
 
     def __str__(self):
