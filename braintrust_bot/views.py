@@ -55,17 +55,17 @@ def webhook(request):
                 # send message as reply with comma-separated list of tagged users
                 message_text = "<i>Brain Trust, assemble!</i> %s\n\n<strong>%s</strong>: %s" \
                                % (", ".join(formatted_users),
-                               update['message']['from']['first_name'],
-                               text.replace("@BrainTrustBot", "").strip())
+                                  update['message']['from']['first_name'], text.replace("@BrainTrustBot", "").strip())
+
+                print("Sending message: " + message_text)
 
                 # go go gadget send message!
                 bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
 
         # catch all - probably bad practice
-        except Exception as e:
-            print("An exception occured.")
+        except Exception:
+            print("An exception occurred.")
             print(traceback.format_exc())
-
 
         # request was OK, so return 200
         return HttpResponse(status=200)
