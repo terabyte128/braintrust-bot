@@ -42,7 +42,7 @@ def webhook(request):
 
             # if the message starts with a /, it's a command, so handle it
             if text[0] == "/":
-                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
+                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
 
             # otherwise, just send a reply with everyone tagged from the chat group
             else:
@@ -73,7 +73,7 @@ def webhook(request):
 
 
 # function to handle all commands sent to the bot
-def send_command(args, chat_id, sender, update):
+def send_command(args, chat_id, sender):
 
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
@@ -162,7 +162,7 @@ def send_command(args, chat_id, sender, update):
 
         # send message as reply with comma-separated list of tagged users
         message_text = "<strong>%s</strong>: %s\n\n%s" \
-                       % (update['message']['from']['first_name'], update['message']['text'],
+                       % (update['message']['from']['first_name'], " ".join(args[1:]),
                           ", ".join(formatted_users))
 
         # go go gadget send message!
