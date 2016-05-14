@@ -125,7 +125,7 @@ def send_command(args, chat_id, sender, update):
         else:
             bot.sendMessage(chat_id=chat_id, text="Usage: /quotes [enable/disable]")
 
-    elif command == "sendquote":
+    elif command == "sendquote" or command == "sq":
         not_command = " ".join(args[1:])
         split = not_command.split(" && ")
 
@@ -145,7 +145,7 @@ def send_command(args, chat_id, sender, update):
         new_quote.save()
         bot.sendMessage(chat_id=chat_id, text="Quote saved successfully.")
 
-    elif command == "getquote":
+    elif command == "getquote" or command == "gq":
         random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat_id).count() - 1)
         random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
 

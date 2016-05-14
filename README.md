@@ -9,8 +9,8 @@ Commands:
 - /remove member: remove a member by username
 - /members: list members
 - /quotes [enable | disable]: enable or disable sending quotes to your chat at random intervals
-- /sendquote quote && author [&& context]: send a quote, with optional context, to the quote database
-- /getquote: get a random quote
+- [/sendquote | /sq] quote && author [&& context]: send a quote, with optional context, to the quote database
+- [/getquote | /gq]: get a random quote
 
 ----
 - **Want to have Braintrust Bot in your group chat?** Add `@BrainTrustBot`.
