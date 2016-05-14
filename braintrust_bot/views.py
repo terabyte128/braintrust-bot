@@ -42,7 +42,7 @@ def webhook(request):
 
             # if the message starts with a /, it's a command, so handle it
             if text[0] == "/":
-                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
+                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
 
             # otherwise, just send a reply with everyone tagged from the chat group
             else:
@@ -73,7 +73,7 @@ def webhook(request):
 
 
 # function to handle all commands sent to the bot
-def send_command(args, chat_id, sender):
+def send_command(args, chat_id, sender, update):
 
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
