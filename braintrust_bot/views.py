@@ -163,7 +163,7 @@ def send_command(args, chat_id, sender, update):
         # send message as reply with comma-separated list of tagged users
         message_text = "<strong>%s</strong>: %s\n\n%s" \
                        % (update['message']['from']['first_name'], " ".join(args[1:]),
-                          ", ".join(formatted_users))
+                          " ".join(formatted_users))
 
         # go go gadget send message!
         bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
