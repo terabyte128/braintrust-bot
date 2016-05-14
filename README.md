@@ -4,7 +4,7 @@ Telegram bot for summoning your Brain Trust.
 A simple Telegram bot that allows you to summon all members in a chat group at once. Also supports sending and retrieving funny quotes at random. 
 
 Commands:
-- @BrainTrustBot message: summon all members with your message
+- [/summon | /braintrust | /s] message: summon all members with your message
 - /add member: add a member by username
 - /remove member: remove a member by username
 - /members: list members
