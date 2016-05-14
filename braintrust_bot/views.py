@@ -153,7 +153,7 @@ def send_command(args, chat_id, sender, update):
 
         bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
 
-    elif command == "summon" or command == "braintrust":
+    elif command == "summon" or command == "braintrust" or command == "s":
         # get users for group, except message sender
         users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
 
