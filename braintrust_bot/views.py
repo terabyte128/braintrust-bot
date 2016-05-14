@@ -42,7 +42,7 @@ def webhook(request):
 
             # if the message starts with a /, it's a command, so handle it
             if text[0] == "/":
-                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'])
+                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
 
             # otherwise, just send a reply with everyone tagged from the chat group
             else:
@@ -53,11 +53,9 @@ def webhook(request):
                 formatted_users = ["@" + user.username for user in users]
 
                 # send message as reply with comma-separated list of tagged users
-                message_text = "<i>Brain Trust, assemble!</i> %s\n\n<strong>%s</strong>: %s" \
-                               % (", ".join(formatted_users),
-                                  update['message']['from']['first_name'], text.replace("@BrainTrustBot", "").strip())
-
-                print("Sending message: " + message_text)
+                message_text = "<strong>%s</strong>: %s\n\n%s" \
+                               % (update['message']['from']['first_name'], update['message']['text'],
+                                  ", ".join(formatted_users))
 
                 # go go gadget send message!
                 bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
@@ -75,7 +73,7 @@ def webhook(request):
 
 
 # function to handle all commands sent to the bot
-def send_command(args, chat_id, sender):
+def send_command(args, chat_id, sender, update):
 
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
@@ -154,6 +152,21 @@ def send_command(args, chat_id, sender):
         quote = generate_quote(random_obj)
 
         bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
+
+    elif command == "summon" or command == "braintrust":
+        # get users for group, except message sender
+        users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
+
+        # format as list starting with @, required for tagging usernames
+        formatted_users = ["@" + user.username for user in users]
+
+        # send message as reply with comma-separated list of tagged users
+        message_text = "<strong>%s</strong>: %s\n\n%s" \
+                       % (update['message']['from']['first_name'], update['message']['text'],
+                          ", ".join(formatted_users))
+
+        # go go gadget send message!
+        bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
 
     # otherwise it's not a real command :(
     else:
