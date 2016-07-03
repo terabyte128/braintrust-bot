@@ -200,10 +200,10 @@ def send_command(args, chat_id, sender, update):
             try:
                 # name and ID together will always be unique
                 group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
+                new_members = []
+                already_there = []
 
                 for member_name in member_names:
-                    new_members = []
-                    already_there = []
                     try:
                         member = ChatGroupMember(username=member_name, chat_group=group)
                         member.save()
@@ -211,13 +211,13 @@ def send_command(args, chat_id, sender, update):
                     except ValidationError:
                         already_there.append(member_name)
 
-                    message_text = group_name + ":\n"
-                    if len(new_members) != 0:
-                        message_text += "Added %s to group.\n" % ", ".join(new_members)
-                    if len(already_there) != 0:
-                        message_text += "%s were already in group.\n" % ", ".join(already_there)
+                message_text = group_name + ":\n"
+                if len(new_members) != 0:
+                    message_text += "Added %s to group.\n" % ", ".join(new_members)
+                if len(already_there) != 0:
+                    message_text += "%s were already in group.\n" % ", ".join(already_there)
 
-                    bot.sendMessage(chat_id=chat_id, text=message_text)
+                bot.sendMessage(chat_id=chat_id, text=message_text)
 
             except ChatGroup.DoesNotExist:
                 bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
