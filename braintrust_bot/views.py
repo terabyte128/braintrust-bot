@@ -195,19 +195,29 @@ def send_command(args, chat_id, sender, update):
     elif command == "addgroupmember" or command == "agm":
         try:
             group_name = args[1]
-            member_name = args[2]
+            member_names = args[2:]
 
             try:
                 # name and ID together will always be unique
                 group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
 
-                try:
-                    member = ChatGroupMember(username=member_name, chat_group=group)
-                    member.save()
-                    bot.sendMessage("%s was successfully added to the %s group." % (member_name, group_name))
-                except ValidationError:
-                    bot.sendMessage(chat_id=chat_id, text="%s is already a member of the %s group."
-                                                          % (member_name, group_name))
+                for member_name in member_names:
+                    new_members = []
+                    already_there = []
+                    try:
+                        member = ChatGroupMember(username=member_name, chat_group=group)
+                        member.save()
+                        new_members.append(member_name)
+                    except ValidationError:
+                        already_there.append(member_name)
+
+                    message_text = group_name + ":\n"
+                    if len(new_members) != 0:
+                        message_text += "Added %s to group.\n" % ", ".join(new_members)
+                    if len(already_there) != 0:
+                        message_text += "%s were already in group.\n" % ", ".join(already_there)
+
+                    bot.sendMessage(chat_id=chat_id, text=message_text)
 
             except ChatGroup.DoesNotExist:
                 bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
@@ -243,6 +253,9 @@ def send_command(args, chat_id, sender, update):
         try:
             group_name = args[1]
             message = " ".join(args[2:])
+
+            if len(message) == 0:
+                raise IndexError
 
             try:
                 # name and ID together will always be unique
@@ -284,6 +297,22 @@ def send_command(args, chat_id, sender, update):
 
         except IndexError:
             bot.sendMessage(chat_id=chat_id, text="Usage: /membersingroup [group name]")
+
+    elif command == "removegroup" or command == "rg":
+        try:
+            group_name = args[1]
+
+            try:
+                # name and ID together will always be unique
+                group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
+                group.delete()
+
+            except ChatGroup.DoesNotExist:
+                bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
+                                                      % group_name)
+
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /removegroup [group name]")
 
     # otherwise it's not a real command :(
     else:
