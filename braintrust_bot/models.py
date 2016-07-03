@@ -31,3 +31,19 @@ class QuoteChat(models.Model):
 
     def __str__(self):
         return str(self.chat_id) + ", " + str(self.quotes_enabled)
+
+
+class ChatGroup(models.Model):
+    name = models.TextField(max_length=100, null=False, blank=False)
+    chat_id = models.BigIntegerField(null=False, blank=False)
+
+    class Meta:
+        unique_together = ('name', 'chat_id')
+
+
+class ChatGroupMember(models.Model):
+    username = models.TextField(max_length=100, null=False, blank=False)
+    chat_group = models.ForeignKey(ChatGroup)
+
+    class Meta:
+        unique_together = ('username', 'chat_group')

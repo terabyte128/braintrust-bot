@@ -3,12 +3,13 @@ import random
 import traceback
 
 import telegram
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
-from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage
+from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember
 from django_braintrust_bot.settings import API_KEY
 
 # initialize the bot for all views
@@ -87,9 +88,9 @@ def send_command(args, chat_id, sender, update):
         try:
             member = ChatMember(username=member_str, chat_id=chat_id)
             member.save()
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully added to the group." % (sender, member_str))
+            bot.sendMessage(chat_id=chat_id, text="%s was successfully added to the global chat group." % member_str)
         except IntegrityError:
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s is already in the group." % (sender, member_str))
+            bot.sendMessage(chat_id=chat_id, text="%s is already in the global chat group." % member_str)
 
     # remove command - remove a user
     elif command == "remove" and args[1]:
@@ -100,17 +101,16 @@ def send_command(args, chat_id, sender, update):
         try:
             member = ChatMember.objects.get(username=member_str)
             member.delete()
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s was successfully deleted from the group."
-                                                     % (sender, member_str))
+            bot.sendMessage(chat_id=chat_id, text="%s was successfully deleted from the global chat group." % member_str)
         except ChatMember.DoesNotExist:
-            bot.sendMessage(chat_id=chat_id, text="@%s: %s is not in the group." % (sender, member_str))
+            bot.sendMessage(chat_id=chat_id, text="%s is not in the global chat group." % member_str)
 
     # list command - list all users
     elif command == "members":
         users = ChatMember.objects.filter(chat_id=chat_id)
         formatted_users = [user.username for user in users]
 
-        bot.sendMessage(chat_id=chat_id, text="Members in group: %s" % (", ".join(formatted_users)))
+        bot.sendMessage(chat_id=chat_id, text="Members in global chat group: %s" % (", ".join(formatted_users)))
 
     elif command == "quotes":
         if args[1] and (args[1] == "enable" or args[1] == "disable"):
@@ -168,6 +168,122 @@ def send_command(args, chat_id, sender, update):
         # go go gadget send message!
         bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
 
+    elif command == "listgroups" or command == "lg":
+        groups = ChatGroup.objects.filter(chat_id=chat_id)
+        if len(groups) != 0:
+            m_text = "Members in group: " + ", ".join([group.name for group in groups])
+            bot.sendMessage(chat_id=chat_id, text=m_text)
+        else:
+            bot.sendMessage(chat_id=chat_id, text="No groups in this chat.")
+
+    elif command == "newgroup" or command == "ng":
+        try:
+            name = args[1]
+            try:
+                # the name and chat ID must be unique together, otherwise a ValidationError will be raised
+                group = ChatGroup(name=name, chat_id=chat_id)
+                group.save()
+
+                bot.sendMessage(chat_id=chat_id, text="Group saved successfully. Add new members with: "
+                                                      "/addgroupmember %s [member name]" % name)
+            except ValidationError:
+                bot.sendMessage(chat_id=chat_id, text="This group already exists.")
+
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /newgroup [group name]")
+
+    elif command == "addgroupmember" or command == "agm":
+        try:
+            group_name = args[1]
+            member_name = args[2]
+
+            try:
+                # name and ID together will always be unique
+                group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
+
+                try:
+                    member = ChatGroupMember(username=member_name, chat_group=group)
+                    member.save()
+                except ValidationError:
+                    bot.sendMessage(chat_id=chat_id, text="%s is already a member of the %s group."
+                                                          % (member_name, group_name))
+
+            except ChatGroup.DoesNotExist:
+                bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
+                                                      % group_name)
+
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /addgroupmember [group name] [member name]")
+
+    elif command == "removegroupmember" or command == "rgm":
+        try:
+            group_name = args[1]
+            member_name = args[2]
+
+            try:
+                # name and ID together will always be unique
+                group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
+
+                try:
+                    member = ChatGroupMember.objects.get(chat_group=group, username=member_name)
+                    member.delete()
+                except ChatGroupMember.DoesNotExist:
+                    bot.sendMessage(chat_id=chat_id, text="%s is not a member of the %s group."
+                                                          % (member_name, group_name))
+
+            except ChatGroup.DoesNotExist:
+                bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
+                                                      % group_name)
+
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /removegroupmember [group name] [member name]")
+
+    elif command == "messagegroup" or command == "mg":
+        try:
+            group_name = args[1]
+            message = " ".join(args[2:])
+
+            try:
+                # name and ID together will always be unique
+                group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
+                members = group.chatgroupmember_set
+
+                formatted_users = ["@" + user.username for user in members]
+
+                message_text = "<strong>%s</strong>: %s\n\n%s" \
+                           % (update['message']['from']['first_name'], " ".join(args[1:]),
+                              " ".join(formatted_users))
+
+                # go go gadget send message!
+                bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
+
+            except ChatGroup.DoesNotExist:
+                bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
+                                                      % group_name)
+
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /messagegroup [group name] [message]")
+
+    elif command == "membersingroup" or command == "mig":
+        try:
+            group_name = args[1]
+
+            try:
+                # name and ID together will always be unique
+                group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
+                members = group.chatgroupmember_set
+
+                message = "Members in %s group: %s" % (group_name, ", ".join([member.username for member in members]))
+
+                bot.sendMessage(chat_id=chat_id, text=message)
+
+            except ChatGroup.DoesNotExist:
+                bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
+                                                      % group_name)
+
+        except IndexError:
+            bot.sendMessage(chat_id=chat_id, text="Usage: /membersingroup [group name]")
+
     # otherwise it's not a real command :(
     else:
         bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
@@ -175,7 +291,13 @@ def send_command(args, chat_id, sender, update):
 
 # returns an HTML-formatted quote
 def generate_quote(quote):
-    text = "<i>\"%s\"</i>\n<strong> - %s %4d</strong>" % (quote.text.capitalize(), quote.author.title(), quote.timestamp.year)
+    try:
+        capitalized = quote.text[0].upper + quote.text[1:]
+    except IndexError:
+        capitalized = quote.text[0].upper
+
+    text = "<i>\"%s\"</i>\n<strong> - %s %4d</strong>" % (capitalized, quote.author.title(),
+                                                          quote.timestamp.year)
     if quote.context != "":
         text += " (%s)" % quote.context
 
