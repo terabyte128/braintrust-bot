@@ -252,7 +252,7 @@ def send_command(args, chat_id, sender, update):
                 formatted_users = ["@" + user.username for user in members]
 
                 message_text = "<strong>%s</strong>: %s\n\n%s" \
-                           % (update['message']['from']['first_name'], " ".join(args[1:]),
+                           % (update['message']['from']['first_name'], message,
                               " ".join(formatted_users))
 
                 # go go gadget send message!
