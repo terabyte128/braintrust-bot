@@ -171,7 +171,7 @@ def send_command(args, chat_id, sender, update):
     elif command == "listgroups" or command == "lg":
         groups = ChatGroup.objects.filter(chat_id=chat_id)
         if len(groups) != 0:
-            m_text = "Members in group: " + ", ".join([group.name for group in groups])
+            m_text = "Groups in this chat: " + ", ".join([group.name for group in groups])
             bot.sendMessage(chat_id=chat_id, text=m_text)
         else:
             bot.sendMessage(chat_id=chat_id, text="No groups in this chat.")
@@ -306,6 +306,8 @@ def send_command(args, chat_id, sender, update):
                 # name and ID together will always be unique
                 group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
                 group.delete()
+
+                bot.sendMessage(chat_id=chat_id, text="Group removed successfully.")
 
             except ChatGroup.DoesNotExist:
                 bot.sendMessage(chat_id=chat_id, text="This group does not exist. Create it with: /newgroup %s"
