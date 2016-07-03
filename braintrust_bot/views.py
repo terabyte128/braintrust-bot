@@ -204,6 +204,7 @@ def send_command(args, chat_id, sender, update):
                 try:
                     member = ChatGroupMember(username=member_name, chat_group=group)
                     member.save()
+                    bot.sendMessage("%s was successfully added to the %s group." % (member_name, group_name))
                 except ValidationError:
                     bot.sendMessage(chat_id=chat_id, text="%s is already a member of the %s group."
                                                           % (member_name, group_name))
@@ -246,7 +247,7 @@ def send_command(args, chat_id, sender, update):
             try:
                 # name and ID together will always be unique
                 group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
-                members = group.chatgroupmember_set
+                members = ChatGroupMember.objects.filter(chat_group=group)
 
                 formatted_users = ["@" + user.username for user in members]
 
@@ -271,7 +272,7 @@ def send_command(args, chat_id, sender, update):
             try:
                 # name and ID together will always be unique
                 group = ChatGroup.objects.get(name=group_name, chat_id=chat_id)
-                members = group.chatgroupmember_set
+                members = ChatGroupMember.objects.filter(chat_group=group)
 
                 message = "Members in %s group: %s" % (group_name, ", ".join([member.username for member in members]))
 
