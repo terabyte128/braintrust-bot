@@ -324,9 +324,9 @@ def send_command(args, chat_id, sender, update):
 # returns an HTML-formatted quote
 def generate_quote(quote):
     try:
-        capitalized = quote.text[0].upper + quote.text[1:]
+        capitalized = quote.text[0].upper() + quote.text[1:]
     except IndexError:
-        capitalized = quote.text[0].upper
+        capitalized = quote.text[0].upper()
 
     text = "<i>\"%s\"</i>\n<strong> - %s %4d</strong>" % (capitalized, quote.author.title(),
                                                           quote.timestamp.year)
