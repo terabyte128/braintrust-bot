@@ -324,7 +324,7 @@ def send_command(args, chat_id, sender, update):
             random_quote = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
 
             meme_url = generate_meme(random_quote.text)
-            bot.sendMessage(chat=chat_id, text=meme_url)
+            bot.sendMessage(chat_id=chat_id, text=meme_url)
 
         # if there are no quotes, just give up
         except Exception as e:
