@@ -125,7 +125,10 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-API_KEY = os.environ['TELEGRAM_API_KEY']
+try:
+    API_KEY = os.environ['TELEGRAM_API_KEY']
+except KeyError:
+    API_KEY = ""
 
 # database and static file settings are a bit different on heroku
 if 'ON_HEROKU' in os.environ:

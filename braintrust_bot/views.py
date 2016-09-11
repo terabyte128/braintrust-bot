@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from braintrust_bot.memes import meme_ids
+import requests
 
 # Create your views here.
 from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember
@@ -316,6 +318,18 @@ def send_command(args, chat_id, sender, update):
         except IndexError:
             bot.sendMessage(chat_id=chat_id, text="Usage: /removegroup [group name]")
 
+    elif command == "getmeme" or command == "gm":
+        try:
+            random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat_id).count() - 1)
+            random_quote = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
+
+            meme_url = generate_meme(random_quote.text)
+            bot.sendMessage(chat=chat_id, text=meme_url)
+
+        # if there are no quotes, just give up
+        except Exception:
+            pass
+
     # otherwise it's not a real command :(
     else:
         bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
@@ -334,3 +348,35 @@ def generate_quote(quote):
         text += " (%s)" % quote.context
 
     return text
+
+
+def generate_meme(quote_text):
+    try:
+        capitalized = quote_text[0].upper() + quote_text[1:]
+    except IndexError:
+        capitalized = quote_text[0].upper()
+
+    split_quote = capitalized.split()
+
+    num_words = len(split_quote)
+
+    # split the number of words in the quote in half
+    size_first_half = int(num_words / 2)
+    size_second_half = num_words - size_first_half
+
+    first_half = " ".join(split_quote[0:size_first_half])
+    second_half = " ".join(split_quote[size_first_half:num_words])
+
+    random_meme = meme_ids[random.randint(0, len(meme_ids) - 1)]
+
+    request = {
+        'username': 'imgflip_hubot',
+        'password': 'imgflip_hubot',
+        'template_id': random_meme,
+        'text0': first_half,
+        'text1': second_half,
+    }
+
+    r = requests.post('https://api.imgflip.com/caption_image', data=request)
+
+    return r.json()['data']['url']
