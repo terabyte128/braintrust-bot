@@ -327,8 +327,8 @@ def send_command(args, chat_id, sender, update):
             bot.sendMessage(chat=chat_id, text=meme_url)
 
         # if there are no quotes, just give up
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
     # otherwise it's not a real command :(
     else:
