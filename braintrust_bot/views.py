@@ -122,7 +122,7 @@ def send_command(args, chat_id, sender, update):
         context = ""
 
         # if it's a reply, then use the original message as the quote
-        if update['message']['reply_to_message']:
+        if 'reply_to_message' in update['message']:
             original_message = update['message']['reply_to_message']
 
             # if there's context (passed as the single argument) then add it
@@ -130,12 +130,12 @@ def send_command(args, chat_id, sender, update):
                 context = " ".join(args[1:])
 
             # this only really works if a message has an author and text
-            if original_message['from']:
+            if 'from' in original_message:
                 author = original_message['from']['first_name']
             else:
                 return
 
-            if original_message['text']:
+            if 'text' in original_message:
                 quote = original_message['text']
             else:
                 return
