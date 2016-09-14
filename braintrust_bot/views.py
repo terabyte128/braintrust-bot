@@ -47,21 +47,9 @@ def webhook(request):
             if text[0] == "/":
                 send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
 
-            # otherwise, just send a reply with everyone tagged from the chat group
+            # otherwise, do nothing
             else:
-                # get users for group, except message sender
-                users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
-
-                # format as list starting with @, required for tagging usernames
-                formatted_users = ["@" + user.username for user in users]
-
-                # send message as reply with comma-separated list of tagged users
-                message_text = "<strong>%s</strong>: %s\n\n%s" \
-                               % (update['message']['from']['first_name'], update['message']['text'],
-                                  " ".join(formatted_users))
-
-                # go go gadget send message!
-                bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
+                pass
 
         # catch all - probably bad practice
         except Exception:
@@ -128,20 +116,46 @@ def send_command(args, chat_id, sender, update):
             bot.sendMessage(chat_id=chat_id, text="Usage: /quotes [enable/disable]")
 
     elif command == "sendquote" or command == "sq":
-        not_command = " ".join(args[1:])
-        split = not_command.split(" && ")
 
-        try:
-            quote = split[0]
-            author = split[1]
-        except IndexError:
-            bot.sendMessage(chat_id=chat_id, text='Usage: /sendquote quote && author [&& context]')
-            return
+        quote = ""
+        author = ""
+        context = ""
 
-        try:
-            context = split[2]
-        except IndexError:
-            context = ""
+        # if it's a reply, then use the original message as the quote
+        if update['message']['reply_to_message']:
+            original_message = update['message']['reply_to_message']
+
+            # if there's context (passed as the single argument) then add it
+            if len(args) > 1:
+                context = " ".join(args[1:])
+
+            # this only really works if a message has an author and text
+            if original_message['from']:
+                author = original_message['from']['first_name']
+            else:
+                return
+
+            if original_message['text']:
+                quote = original_message['text']
+            else:
+                return
+
+        # otherwise, try and parse the quote
+        else:
+            not_command = " ".join(args[1:])
+            split = not_command.split(" && ")
+
+            try:
+                quote = split[0]
+                author = split[1]
+            except IndexError:
+                bot.sendMessage(chat_id=chat_id, text='Usage: /sendquote quote && author [&& context]')
+                return
+
+            try:
+                context = split[2]
+            except IndexError:
+                context = ""
 
         new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context)
         new_quote.save()
