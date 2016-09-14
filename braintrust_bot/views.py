@@ -117,9 +117,7 @@ def send_command(args, chat_id, sender, update):
 
     elif command == "sendquote" or command == "sq":
 
-        quote = ""
-        author = ""
-        context = ""
+        print(update)
 
         # if it's a reply, then use the original message as the quote
         if 'reply_to_message' in update['message']:
@@ -128,6 +126,8 @@ def send_command(args, chat_id, sender, update):
             # if there's context (passed as the single argument) then add it
             if len(args) > 1:
                 context = " ".join(args[1:])
+            else:
+                context = ""
 
             # this only really works if a message has an author and text
             if 'from' in original_message:
