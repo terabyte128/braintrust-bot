@@ -4,13 +4,21 @@ Telegram bot for summoning your Brain Trust.
 A simple Telegram bot that allows you to summon all members in a chat group at once. Also supports sending and retrieving funny quotes at random. 
 
 Commands:
-- [/summon | /braintrust | /s] message: summon all members with your message
-- /add member: add a member by username
-- /remove member: remove a member by username
-- /members: list members
-- /quotes [enable | disable]: enable or disable sending quotes to your chat at random intervals
-- [/sendquote | /sq] quote && author [&& context]: send a quote, with optional context, to the quote database
-- [/getquote | /gq]: get a random quote
+- [ /summon | /braintrust | /s ] - summon braintrust
+
+- [ /sendquote | /s ] - send a quote in the format quote && author [&& context]
+- [/ getquote | /gq ] - get a random quote
+- quotes - enable/disable random daily quotes
+- add - add member to braintrust
+- remove - remove member from braintrust
+- members - list members of braintrust
+- [ /listgroups | /lg ] - list groups within braintrust
+- [ /newgroup | /ng ] - create new chat group within braintrust
+- [ /addgroupmember | /agm ] - add member to a group within braintrust
+- [ /removegroupmember | /rgm ] - remove member from a group within braintrust
+- [ /messagegroup | /mg ] - send a message to a group within braintrust
+- [/ membersingroup | /mig ] - get members of group within braintrust
+- [ /removegroup | /rg ] - remove group from braintrust
 
 ----
 - **Want to have Braintrust Bot in your group chat?** Add `@BrainTrustBot`.
