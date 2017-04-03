@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Braintrust Bot Management</title>
+</head>
+<body>
+    <table>
+        <thead>
+        <tr>
+            <th>Chat Members</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for chat in chats %}
+            {{ chat }}
+        {% endfor %}
+
+        </tbody>
+    </table>
+</body>
+</html>

@@ -3,9 +3,12 @@ import random
 import traceback
 
 import telegram
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http.response import HttpResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from braintrust_bot.memes import meme_ids
 import requests
@@ -19,8 +22,20 @@ bot = telegram.Bot(token=API_KEY)
 
 
 # This page doesn't do much, just verify that the bot is working as expected
+@login_required
 def index(request):
-    return HttpResponse("BrainTrust Bot 2.0")
+    chats = ChatGroup.objects.all()
+
+    context = {
+        chats: chats
+    }
+
+    return render(request, 'braintrust_bot/index.html', context)
+
+
+def sign_out(request):
+    logout(request)
+    return HttpResponse("Signed out successfully.")
 
 
 # Set the webhook for the bot - should be disabled in production via urls.py
