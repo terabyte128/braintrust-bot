@@ -204,7 +204,7 @@ def send_command(args, chat_id, sender, update):
         message_pieces = generate_summon(chat_id, update['message']['from']['username'],
                                          update['message']['from']['first_name'], " ".join(args[1:]))
 
-        full_message = "%s\n\n\n\n%s" % (message_pieces[0], message_pieces[1])
+        full_message = "%s\n%s" % (message_pieces[0], message_pieces[1])
 
         message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML")
 
@@ -428,7 +428,7 @@ def generate_meme(quote_text):
 
 def generate_summon(chat_id, sender_username, sender_name, message):
     # get users for group, except message sender
-    users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=sender_username)
+    users = ChatMember.objects.filter(chat_id=chat_id).exclude(username__iexact=sender_username)
 
     # format as list starting with @, required for tagging usernames
     formatted_users = ["@" + user.username for user in users]
