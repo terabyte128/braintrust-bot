@@ -209,10 +209,10 @@ def send_command(args, chat_id, sender, update):
         message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML")
 
         # this is hacky and not a good idea
-        time.sleep(1)
+       # time.sleep(1)
 
         # immediately edit the message
-        bot.editMessageText(message_pieces[0], chat_id=chat_id, message_id=message.message_id, parse_mode="HTML")
+       # bot.editMessageText(message_pieces[0], chat_id=chat_id, message_id=message.message_id, parse_mode="HTML")
 
     elif command == "listgroups" or command == "lg":
         groups = ChatGroup.objects.filter(chat_id=chat_id)
