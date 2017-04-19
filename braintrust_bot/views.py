@@ -56,30 +56,32 @@ def webhook(request):
         try:
             update = json.loads(request.body.decode('utf-8'))
 
+            if 'message' in update:
+
+                chat_id = update['message']['chat']['id']
+                text = update['message']['text']
+
+                # if the message starts with a /, it's a command, so handle it
+                if text[0] == "/":
+                    send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
+
+                # otherwise, do nothing
+                else:
+                    pass
+
+            elif 'inline_query' in update:
+                pass
+
+            # request was OK, so return 200
+            return HttpResponse(status=200)
+
+
         # something went wrong with processing the request
         except Exception:
             print("An exception occurred.")
             print(traceback.format_exc())
             return
 
-        if 'message' in update:
-
-            chat_id = update['message']['chat']['id']
-            text = update['message']['text']
-
-            # if the message starts with a /, it's a command, so handle it
-            if text[0] == "/":
-                send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
-
-            # otherwise, do nothing
-            else:
-                pass
-
-        elif 'inline_query' in update:
-            pass
-
-        # request was OK, so return 200
-        return HttpResponse(status=200)
     else:
         # otherwise, unauthorized
         return HttpResponse(status=401)
