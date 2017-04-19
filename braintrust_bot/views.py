@@ -62,7 +62,7 @@ def webhook(request):
             print(traceback.format_exc())
             return
 
-        if update['message']:
+        if 'message' in update:
 
             chat_id = update['message']['chat']['id']
             text = update['message']['text']
@@ -75,7 +75,7 @@ def webhook(request):
             else:
                 pass
 
-        elif update['inline_query']:
+        elif 'inline_query' in update:
             pass
 
         # request was OK, so return 200
