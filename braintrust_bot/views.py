@@ -52,9 +52,18 @@ def set_webhook(request):
 def webhook(request):
     # only respond to request if the bot uses the correct API key (encoded in GET)
     if request.GET.get('API_KEY') == API_KEY:
+
         try:
-            # try to load info from JSON request body
             update = json.loads(request.body.decode('utf-8'))
+
+        # something went wrong with processing the request
+        except Exception:
+            print("An exception occurred.")
+            print(traceback.format_exc())
+            return
+
+        if update['message']:
+
             chat_id = update['message']['chat']['id']
             text = update['message']['text']
 
@@ -66,16 +75,18 @@ def webhook(request):
             else:
                 pass
 
-        # catch all - probably bad practice
-        except Exception:
-            print("An exception occurred.")
-            print(traceback.format_exc())
+        elif update['inline_query']:
+            pass
 
         # request was OK, so return 200
         return HttpResponse(status=200)
     else:
         # otherwise, unauthorized
         return HttpResponse(status=401)
+
+
+def handle_inline(query, chat_id, sender):
+    pass
 
 
 # function to handle all commands sent to the bot
@@ -185,19 +196,16 @@ def send_command(args, chat_id, sender, update):
         bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
 
     elif command == "summon" or command == "braintrust" or command == "s":
-        # get users for group, except message sender
-        users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=update['message']['from']['username'])
 
-        # format as list starting with @, required for tagging usernames
-        formatted_users = ["@" + user.username for user in users]
+        message_pieces = generate_summon(chat_id, update['message']['from']['username'],
+                                         update['message']['from']['first_name'])
 
-        # send message as reply with comma-separated list of tagged users
-        message_text = "<strong>%s</strong>: %s\n\n%s" \
-                       % (update['message']['from']['first_name'], " ".join(args[1:]),
-                          " ".join(formatted_users))
+        full_message = "%s\n\n%s" % (message_pieces[0], message_pieces[1])
 
-        # go go gadget send message!
-        bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
+        message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML",
+                                  reply_to_message_id=update['message']['message_id'])
+
+        #message.
 
     elif command == "listgroups" or command == "lg":
         groups = ChatGroup.objects.filter(chat_id=chat_id)
@@ -409,3 +417,17 @@ def generate_meme(quote_text):
     r = requests.post('https://api.imgflip.com/caption_image', data=request)
 
     return r.json()['data']['url']
+
+
+def generate_summon(chat_id, sender_username, sender_name, message):
+    # get users for group, except message sender
+    users = ChatMember.objects.filter(chat_id=chat_id).exclude(username=sender_username)
+
+    # format as list starting with @, required for tagging usernames
+    formatted_users = ["@" + user.username for user in users]
+
+    # send message as reply with comma-separated list of tagged users
+    message_text = "<strong>%s</strong>: %s" % (sender_name, message)
+
+    formatted_users_text = " ".join(formatted_users)
+    return message_text, formatted_users_text
