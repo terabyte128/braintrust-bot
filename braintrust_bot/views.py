@@ -1,8 +1,10 @@
 import json
 import random
+import threading
 import traceback
 
 import telegram
+import time
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -204,10 +206,13 @@ def send_command(args, chat_id, sender, update):
 
         full_message = "%s\n\n%s" % (message_pieces[0], message_pieces[1])
 
-        message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML",
-                                  reply_to_message_id=update['message']['message_id'])
+        message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML")
 
-        #message.
+        # this is hacky and not a good idea
+        time.sleep(100)
+
+        # immediately edit the message
+        bot.editMessageText(message_pieces[0], chat_id=chat_id, message_id=message.message_id)
 
     elif command == "listgroups" or command == "lg":
         groups = ChatGroup.objects.filter(chat_id=chat_id)
@@ -433,3 +438,23 @@ def generate_summon(chat_id, sender_username, sender_name, message):
 
     formatted_users_text = " ".join(formatted_users)
     return message_text, formatted_users_text
+
+
+class SendSummonAsync(threading.Thread):
+    def __init__(self, chat_id, sender_username, sender_first_name, message):
+        threading.Thread.__init__(self)
+        self.chat_id = chat_id
+        self.sender_username = sender_username
+        self.sender_first_name = sender_first_name
+        self.message = message
+
+    def run(self):
+        message_pieces = generate_summon(self.chat_id, self.sender_username,
+                                         self.sender_first_name, self.message)
+
+        full_message = "%s\n\n%s" % (message_pieces[0], message_pieces[1])
+
+        message = bot.sendMessage(chat_id=self.chat_id, text=full_message, parse_mode="HTML")
+
+        # immediately edit the message
+        bot.editMessageText(message_pieces[0], chat_id=self.chat_id, message_id=message.message_id)
