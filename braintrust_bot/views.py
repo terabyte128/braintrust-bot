@@ -200,7 +200,7 @@ def send_command(args, chat_id, sender, update):
     elif command == "summon" or command == "braintrust" or command == "s":
 
         message_pieces = generate_summon(chat_id, update['message']['from']['username'],
-                                         update['message']['from']['first_name'])
+                                         update['message']['from']['first_name'], " ".join(args[1:]))
 
         full_message = "%s\n\n%s" % (message_pieces[0], message_pieces[1])
 
