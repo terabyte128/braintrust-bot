@@ -204,7 +204,7 @@ def send_command(args, chat_id, sender, update):
         message_pieces = generate_summon(chat_id, update['message']['from']['username'],
                                          update['message']['from']['first_name'], " ".join(args[1:]))
 
-        full_message = "%s\n\n%s" % (message_pieces[0], message_pieces[1])
+        full_message = "%s\n\n\n\n%s" % (message_pieces[0], message_pieces[1])
 
         message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML")
 
