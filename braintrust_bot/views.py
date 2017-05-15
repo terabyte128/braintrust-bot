@@ -153,6 +153,8 @@ def send_command(args, chat_id, sender, update):
         if 'reply_to_message' in update['message']:
             original_message = update['message']['reply_to_message']
 
+            location = ""
+
             # if there's context (passed as the single argument) then add it
             if len(args) > 1:
                 context = " ".join(args[1:])
@@ -192,7 +194,10 @@ def send_command(args, chat_id, sender, update):
             except IndexError:
                 location = ""
 
-        new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context, location=location)
+        sender = update['message']['from']['first_name'] + " " + update['message']['from']['last_name']
+
+        new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context,
+                                 location=location, sender=sender)
         new_quote.save()
         bot.sendMessage(chat_id=chat_id, text="Quote saved successfully.")
 
