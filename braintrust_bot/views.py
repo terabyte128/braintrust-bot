@@ -147,7 +147,7 @@ def send_command(args, chat_id, sender, update):
 
     elif command == "sendquote" or command == "sq":
 
-        # print(update)
+        print(update)
 
         # if it's a reply, then use the original message as the quote
         if 'reply_to_message' in update['message']:
