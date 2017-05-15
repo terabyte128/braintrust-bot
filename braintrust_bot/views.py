@@ -147,7 +147,7 @@ def send_command(args, chat_id, sender, update):
 
     elif command == "sendquote" or command == "sq":
 
-        print(update)
+        # print(update)
 
         # if it's a reply, then use the original message as the quote
         if 'reply_to_message' in update['message']:
@@ -173,21 +173,26 @@ def send_command(args, chat_id, sender, update):
         # otherwise, try and parse the quote
         else:
             not_command = " ".join(args[1:])
-            split = not_command.split(" && ")
+            split = not_command.split("&&")
 
             try:
-                quote = split[0]
-                author = split[1]
+                quote = split[0].strip()
+                author = split[1].strip()
             except IndexError:
-                bot.sendMessage(chat_id=chat_id, text='Usage: /sendquote quote && author [&& context]')
+                bot.sendMessage(chat_id=chat_id, text='Usage: /sendquote quote && author [&& context] [&& location]')
                 return
 
             try:
-                context = split[2]
+                context = split[2].strip()
             except IndexError:
                 context = ""
 
-        new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context)
+            try:
+                location = split[3].strip()
+            except IndexError:
+                location = ""
+
+        new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context, location=location)
         new_quote.save()
         bot.sendMessage(chat_id=chat_id, text="Quote saved successfully.")
 

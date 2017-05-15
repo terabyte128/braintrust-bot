@@ -20,6 +20,7 @@ class QuoteStorage(models.Model):
     context = models.TextField(max_length=500, blank=True)
     author = models.TextField(max_length=100, null=False, blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+    location = models.TextField(max_length=500, blank=True, null=True)
 
     def __str__(self):
         return str(self.author) + "@" + str(self.chat_id) + " on " + str(self.timestamp)
