@@ -181,7 +181,7 @@ def send_command(args, chat_id, sender, update):
                 quote = split[0].strip()
                 author = split[1].strip()
             except IndexError:
-                bot.sendMessage(chat_id=chat_id, text='Usage: /sendquote quote && author [&& context] [&& location]')
+                bot.sendMessage(chat_id=chat_id, text='⚠️ Usage: /sendquote quote && author [&& context] [&& location]')
                 return
 
             try:
