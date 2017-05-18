@@ -199,7 +199,7 @@ def send_command(args, chat_id, sender, update):
         new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context,
                                  location=location, sender=sender)
         new_quote.save()
-        bot.sendMessage(chat_id=chat_id, text="Quote saved successfully.")
+        bot.sendMessage(chat_id=chat_id, text="👍 Quote saved successfully.")
 
     elif command == "getquote" or command == "gq":
         random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat_id).count() - 1)
