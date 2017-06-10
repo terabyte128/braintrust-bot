@@ -137,7 +137,7 @@ def send_command(args, chat_id, sender_username, update, sender):
         if command == "sp":
             last_photo.first().confirmed = True
 
-            if args[1]:
+            if len(args) > 1:
                 last_photo.caption = args[1:]
 
             last_photo.first().save()
@@ -152,7 +152,7 @@ def send_command(args, chat_id, sender_username, update, sender):
         bot.sendMessage(chat_id=chat_id, text="⚠ You didn't send a photo!")
 
     # add command - add a user
-    if command == "add" and args[1]:
+    if command == "add" and len(args) > 1:
         # split off @ at beginning if necessary
         member_str = args[1][1:] if args[1][0] == "@" else args[1]
 
