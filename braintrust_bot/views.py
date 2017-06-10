@@ -73,7 +73,8 @@ def webhook(request):
                 if 'text' in update['message']:
                     text = update['message']['text']
 
-                    send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update, sender)
+                    if text[0] == "/":
+                        send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update, sender)
 
                 # deal with photos separately
                 elif 'photo' in update['message']:
