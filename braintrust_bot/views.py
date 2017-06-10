@@ -138,17 +138,19 @@ def send_command(args, chat_id, sender_username, update, sender):
             last_photo.first().confirmed = True
 
             if len(args) > 1:
-                last_photo.caption = args[1:]
+                last_photo.first().caption = args[1:]
 
             last_photo.first().save()
 
             bot.sendMessage(chat_id=chat_id, text="🌄 Your most recent photo was saved successfully.")
+            bot.sendPhoto(chat_id=chat_id, photo=last_photo.first().photo_id)
 
         # delete ALL unconfirmed photos
         last_photo.delete()
         return
-    else:
-        bot.sendMessage(chat_id=chat_id, text="⚠ You didn't send a photo!")
+
+    if command == "sp":
+        bot.sendMessage(chat_id=chat_id, text="⚠️️ You didn't send a photo!")
 
     # add command - add a user
     if command == "add" and len(args) > 1:
