@@ -151,6 +151,7 @@ def send_command(args, chat_id, sender_username, update, sender):
 
     if command == "sp":
         bot.sendMessage(chat_id=chat_id, text="⚠️️ You didn't send a photo!")
+        return
 
     # add command - add a user
     if command == "add" and len(args) > 1:
