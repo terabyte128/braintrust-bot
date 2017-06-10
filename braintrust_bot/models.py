@@ -29,9 +29,11 @@ class QuoteStorage(models.Model):
 
 class Photo(models.Model):
     chat_id = models.BigIntegerField(null=False, blank=False)
-    title = models.TextField(null=True, blank=True)
+    caption = models.TextField(null=True, blank=True)
     sender = models.TextField(max_length=100, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    photo_id = models.TextField()
+    confirmed = models.BooleanField(default=False)
 
 
 class QuoteChat(models.Model):

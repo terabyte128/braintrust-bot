@@ -16,7 +16,7 @@ from braintrust_bot.memes import meme_ids
 import requests
 
 # Create your views here.
-from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember
+from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember, Photo
 from django_braintrust_bot.settings import API_KEY
 
 # initialize the bot for all views
@@ -59,15 +59,39 @@ def webhook(request):
             update = json.loads(request.body.decode('utf-8'))
 
             if 'message' in update:
-
-                print(update)
-
                 chat_id = update['message']['chat']['id']
-                text = update['message']['text']
+                sender = update['message']['from']['first_name'] + " " + update['message']['from']['last_name']
 
-                # if the message starts with a /, it's a command, so handle it
-                if text[0] == "/":
-                    send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update)
+                # we know how to process messages, and photos
+                if 'text' in update['message']:
+                    text = update['message']['text']
+
+
+                    # if the message starts with a /, it's a command, so handle it
+                    if text[0] == "/":
+                        send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update,
+                                     sender)
+
+
+                # deal with photos separately
+                elif 'photo' in update['message']:
+                    photo_things = update['message']['photo']
+
+                    caption = update['message']['caption'] if 'caption' in update['message'] else ""
+
+                    largest_photo = None
+
+                    # find the biggest photo ID
+                    for photo in photo_things:
+                        if largest_photo is not None:
+                            if photo['file_size'] > largest_photo['file_size']:
+                                largest_photo = photo
+                        else:
+                            largest_photo = photo
+
+                    largest_photo_id = largest_photo['file_id']
+
+                    add_photo(chat_id, sender, caption, largest_photo_id)
 
                 # otherwise, do nothing
                 else:
@@ -95,11 +119,37 @@ def handle_inline(query, chat_id, sender):
     pass
 
 
+def add_photo(chat_id, sender, caption, photo_id):
+    photo = Photo(chat_id=chat_id, sender=sender, caption=caption, photo_id=photo_id)
+    photo.save()
+
+
 # function to handle all commands sent to the bot
-def send_command(args, chat_id, sender, update):
+def send_command(args, chat_id, sender_username, update, sender):
 
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
+
+    last_photo = Photo.objects.find(sender=sender, confirmed=False).order_by('-timestamp')
+
+    # confirm a photo
+    if last_photo:
+        if command == "sp":
+            last_photo.first().confirmed = True
+
+            if args[1]:
+                last_photo.caption = args[1:]
+
+            last_photo.first().save()
+
+            bot.sendMessage(chat_id=chat_id, text="🌄 Photo saved successfully.")
+            return
+
+        else:
+            # delete ALL unconfirmed photos
+            last_photo.delete()
+    else:
+        bot.sendMessage(chat_id=chat_id, text="⚠ You didn't send a photo!")
 
     # add command - add a user
     if command == "add" and args[1]:
@@ -388,7 +438,7 @@ def send_command(args, chat_id, sender, update):
 
     # otherwise it's not a real command :(
     else:
-        bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender)
+        bot.sendMessage(chat_id=chat_id, text="@%s: Command not found." % sender_username)
 
 
 # returns an HTML-formatted quote
