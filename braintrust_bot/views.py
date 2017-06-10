@@ -140,7 +140,7 @@ def send_command(args, chat_id, sender_username, update, sender):
             last_photo.first().save()
 
             bot.sendMessage(chat_id=chat_id, text="🌄 Your most recent photo was saved successfully.")
-            bot.sendPhoto(chat_id=chat_id, photo=last_photo.first().photo_id)
+            # bot.sendPhoto(chat_id=chat_id, photo=last_photo.first().photo_id)
 
         # delete ALL unconfirmed photos
         last_photo.delete()
@@ -259,6 +259,11 @@ def send_command(args, chat_id, sender_username, update, sender):
         quote = generate_quote(random_obj)
 
         bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
+
+    elif command == "getphoto" or command == "gp":
+        random_idx = random.randint(0, Photo.objects.filter(chat_id=chat_id).count() - 1)
+        random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
+        bot.sendPhoto(chat_id=chat_id, photo=random_obj.photo_id, caption=random_obj.caption)
 
     elif command == "summon" or command == "braintrust" or command == "s":
 
