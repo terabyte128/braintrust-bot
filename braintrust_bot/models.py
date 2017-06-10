@@ -34,6 +34,7 @@ class Photo(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     photo_id = models.TextField()
     confirmed = models.BooleanField(default=False)
+    sender_username = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "confirmed = " + str(self.confirmed) + "  " + str(self.caption) + " by " + str(self.sender) + " @ " + str(self.chat_id)

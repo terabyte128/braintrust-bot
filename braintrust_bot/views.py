@@ -60,14 +60,20 @@ def webhook(request):
 
             if 'message' in update:
                 chat_id = update['message']['chat']['id']
-                sender = update['message']['from']['first_name'] + " " + update['message']['from']['last_name']
+
+                sender = ""
+
+                if 'first_name' in update['message']['from']:
+                    sender += update['message']['from']['first_name']
+
+                if 'last_name' in update['message']['from']:
+                    sender += " " + update['message']['from']['last_name']
 
                 # we know how to process messages, and photos
                 if 'text' in update['message']:
                     text = update['message']['text']
 
                     send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update, sender)
-
 
                 # deal with photos separately
                 elif 'photo' in update['message']:
@@ -87,7 +93,7 @@ def webhook(request):
 
                     largest_photo_id = largest_photo['file_id']
 
-                    add_photo(chat_id, sender, caption, largest_photo_id)
+                    add_photo(chat_id, sender, caption, largest_photo_id, update['message']['from']['username'])
 
                 # otherwise, delete all unconfirmed photos
                 else:
@@ -116,8 +122,8 @@ def handle_inline(query, chat_id, sender):
     pass
 
 
-def add_photo(chat_id, sender, caption, photo_id):
-    photo = Photo(chat_id=chat_id, sender=sender, caption=caption, photo_id=photo_id)
+def add_photo(chat_id, sender, caption, photo_id, username):
+    photo = Photo(chat_id=chat_id, sender=sender, caption=caption, photo_id=photo_id, sender_username=username)
     photo.save()
 
 
@@ -127,7 +133,7 @@ def send_command(args, chat_id, sender_username, update, sender):
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
 
-    last_photo = Photo.objects.filter(sender=sender, confirmed=False).order_by('-timestamp')
+    last_photo = Photo.objects.filter(sender_username=sender_username, confirmed=False).order_by('-timestamp')
 
     # confirm a photo
     if last_photo:
@@ -244,8 +250,6 @@ def send_command(args, chat_id, sender_username, update, sender):
                 location = split[3].strip()
             except IndexError:
                 location = ""
-
-        sender = update['message']['from']['first_name'] + " " + update['message']['from']['last_name']
 
         new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context,
                                  location=location, sender=sender)
