@@ -262,7 +262,7 @@ def send_command(args, chat_id, sender_username, update, sender):
 
     elif command == "getphoto" or command == "gp":
         random_idx = random.randint(0, Photo.objects.filter(chat_id=chat_id).count() - 1)
-        random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
+        random_obj = Photo.objects.filter(chat_id=chat_id)[random_idx]
         bot.sendPhoto(chat_id=chat_id, photo=random_obj.photo_id, caption=random_obj.caption)
 
     elif command == "summon" or command == "braintrust" or command == "s":
