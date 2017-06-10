@@ -130,7 +130,7 @@ def send_command(args, chat_id, sender_username, update, sender):
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
 
-    last_photo = Photo.objects.find(sender=sender, confirmed=False).order_by('-timestamp')
+    last_photo = Photo.objects.filter(sender=sender, confirmed=False).order_by('-timestamp')
 
     # confirm a photo
     if last_photo:
