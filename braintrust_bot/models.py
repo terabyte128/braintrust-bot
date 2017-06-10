@@ -36,7 +36,7 @@ class Photo(models.Model):
     confirmed = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.caption) + " by " + str(self.sender) + " @ " + str(self.chat_id)
+        return "confirmed = " + str(self.confirmed) + "  " + str(self.caption) + " by " + str(self.sender) + " @ " + str(self.chat_id)
 
 
 class QuoteChat(models.Model):
