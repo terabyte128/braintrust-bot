@@ -60,6 +60,8 @@ def webhook(request):
 
             if 'message' in update:
 
+                print(update)
+
                 chat_id = update['message']['chat']['id']
                 text = update['message']['text']
 

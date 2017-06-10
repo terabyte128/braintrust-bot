@@ -27,6 +27,13 @@ class QuoteStorage(models.Model):
         return str(self.author) + "@" + str(self.chat_id) + " on " + str(self.timestamp)
 
 
+class Photo(models.Model):
+    chat_id = models.BigIntegerField(null=False, blank=False)
+    title = models.TextField(null=True, blank=True)
+    sender = models.TextField(max_length=100, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
 class QuoteChat(models.Model):
     chat_id = models.BigIntegerField(null=False, blank=False, unique=True)
     quotes_enabled = models.BooleanField(default=False)
