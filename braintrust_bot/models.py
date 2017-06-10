@@ -35,6 +35,9 @@ class Photo(models.Model):
     photo_id = models.TextField()
     confirmed = models.BooleanField(default=False)
 
+    def __str__(self):
+        return str(self.caption) + " by " + str(self.sender) + " @ " + str(self.chat_id)
+
 
 class QuoteChat(models.Model):
     chat_id = models.BigIntegerField(null=False, blank=False, unique=True)

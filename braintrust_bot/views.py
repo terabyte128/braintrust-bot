@@ -142,12 +142,11 @@ def send_command(args, chat_id, sender_username, update, sender):
 
             last_photo.first().save()
 
-            bot.sendMessage(chat_id=chat_id, text="🌄 Photo saved successfully.")
-            return
+            bot.sendMessage(chat_id=chat_id, text="🌄 Your most recent photo was saved successfully.")
 
-        else:
-            # delete ALL unconfirmed photos
-            last_photo.delete()
+        # delete ALL unconfirmed photos
+        last_photo.delete()
+        return
     else:
         bot.sendMessage(chat_id=chat_id, text="⚠ You didn't send a photo!")
 
