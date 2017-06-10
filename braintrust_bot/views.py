@@ -66,11 +66,7 @@ def webhook(request):
                 if 'text' in update['message']:
                     text = update['message']['text']
 
-
-                    # if the message starts with a /, it's a command, so handle it
-                    if text[0] == "/":
-                        send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update,
-                                     sender)
+                    send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update, sender)
 
 
                 # deal with photos separately
@@ -93,8 +89,9 @@ def webhook(request):
 
                     add_photo(chat_id, sender, caption, largest_photo_id)
 
-                # otherwise, do nothing
+                # otherwise, delete all unconfirmed photos
                 else:
+                    Photo.objects.filter(sender=sender, confirmed=False).order_by('-timestamp')
                     pass
 
             elif 'inline_query' in update:
@@ -138,7 +135,7 @@ def send_command(args, chat_id, sender_username, update, sender):
             last_photo.first().confirmed = True
 
             if len(args) > 1:
-                last_photo.first().caption = args[1:]
+                last_photo.first().caption = " ".join(args[1:])
 
             last_photo.first().save()
 
