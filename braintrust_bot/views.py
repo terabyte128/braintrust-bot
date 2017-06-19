@@ -261,7 +261,7 @@ def send_command(args, chat_id, sender_username, update, sender):
         bot.sendMessage(chat_id=chat_id, text="👍 Quote saved successfully.")
 
     elif command == "getquote" or command == "gq":
-        random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat_id).count() - 1)
+        random_idx = random.randrange(0, QuoteStorage.objects.filter(chat_id=chat_id).count())
         random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
 
         quote = generate_quote(random_obj)
@@ -269,7 +269,7 @@ def send_command(args, chat_id, sender_username, update, sender):
         bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
 
     elif command == "getphoto" or command == "gp":
-        random_idx = random.randint(0, Photo.objects.filter(chat_id=chat_id, confirmed=True).count() - 1)
+        random_idx = random.randrange(0, Photo.objects.filter(chat_id=chat_id, confirmed=True).count())
         random_obj = Photo.objects.filter(chat_id=chat_id, confirmed=True)[random_idx]
         bot.sendPhoto(chat_id=chat_id, photo=random_obj.photo_id, caption=random_obj.caption)
 
@@ -438,7 +438,7 @@ def send_command(args, chat_id, sender_username, update, sender):
 
     elif command == "getmeme" or command == "gm":
         try:
-            random_idx = random.randint(0, QuoteStorage.objects.filter(chat_id=chat_id).count() - 1)
+            random_idx = random.randrange(0, QuoteStorage.objects.filter(chat_id=chat_id).count())
             random_quote = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
 
             meme_url = generate_meme(random_quote.text)
@@ -449,7 +449,7 @@ def send_command(args, chat_id, sender_username, update, sender):
             print(e)
 
     elif command == "8ball":
-        random_idx = random.randint(0, EightBallAnswer.objects.filter(chat_id=chat_id).count() - 1)
+        random_idx = random.randrange(0, EightBallAnswer.objects.filter(chat_id=chat_id).count())
         random_answer = EightBallAnswer.objects.filter(chat_id=chat_id)[random_idx]
         bot.sendMessage(chat_id=chat_id, text="<i>%s</i>" % random_answer.answer, parse_mode="HTML")
 
@@ -490,7 +490,7 @@ def generate_meme(quote_text):
     first_half = " ".join(split_quote[0:size_first_half])
     second_half = " ".join(split_quote[size_first_half:num_words])
 
-    random_meme = meme_ids[random.randint(0, len(meme_ids) - 1)]
+    random_meme = meme_ids[random.randrange(0, len(meme_ids))]
 
     request = {
         'username': 'imgflip_hubot',
