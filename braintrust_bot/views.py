@@ -16,7 +16,8 @@ from braintrust_bot.memes import meme_ids
 import requests
 
 # Create your views here.
-from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember, Photo
+from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember, Photo, \
+    EightBallAnswer
 from django_braintrust_bot.settings import API_KEY
 
 # initialize the bot for all views
@@ -444,6 +445,11 @@ def send_command(args, chat_id, sender_username, update, sender):
         # if there are no quotes, just give up
         except Exception as e:
             print(e)
+
+    elif command == "8ball":
+        random_idx = random.randint(0, EightBallAnswer.objects.filter(chat_id=chat_id).count() - 1)
+        random_answer = EightBallAnswer.objects.filter(chat_id=chat_id)[random_idx]
+        bot.sendMessage(chat_id=chat_id, text="<i>%s</i>" % random_answer.answer)
 
     # otherwise it's not a real command :(
     else:

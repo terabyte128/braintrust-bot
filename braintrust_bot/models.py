@@ -62,3 +62,11 @@ class ChatGroupMember(models.Model):
 
     class Meta:
         unique_together = ('username', 'chat_group')
+
+
+class EightBallAnswer(models.Model):
+    answer = models.TextField(null=False, blank=False)
+    chat_id = models.BigIntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return self.answer + " @ " + str(self.chat_id)
