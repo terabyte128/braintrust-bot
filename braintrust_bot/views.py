@@ -449,7 +449,7 @@ def send_command(args, chat_id, sender_username, update, sender):
     elif command == "8ball":
         random_idx = random.randint(0, EightBallAnswer.objects.filter(chat_id=chat_id).count() - 1)
         random_answer = EightBallAnswer.objects.filter(chat_id=chat_id)[random_idx]
-        bot.sendMessage(chat_id=chat_id, text="<i>%s</i>" % random_answer.answer)
+        bot.sendMessage(chat_id=chat_id, text="<i>%s</i>" % random_answer.answer, parse_mode="HTML")
 
     # otherwise it's not a real command :(
     else:
