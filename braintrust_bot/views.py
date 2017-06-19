@@ -223,6 +223,8 @@ def send_command(args, chat_id, sender_username, update, sender):
             # this only really works if a message has an author and text
             if 'from' in original_message:
                 author = original_message['from']['first_name']
+                if 'last_name' in original_message['from']:
+                    author += " " + original_message['from']['last_name']
             else:
                 return
 
@@ -254,7 +256,7 @@ def send_command(args, chat_id, sender_username, update, sender):
                 location = ""
 
         new_quote = QuoteStorage(chat_id=chat_id, text=quote, author=author, context=context,
-                                 location=location, sender=sender)
+                                 location=location, sender=sender_username)
         new_quote.save()
         bot.sendMessage(chat_id=chat_id, text="👍 Quote saved successfully.")
 
