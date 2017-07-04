@@ -16,5 +16,5 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_braintrust_bot.settings"
 
 application = get_wsgi_application()
 
-if 'ON_HEROKU' in os.environ:
+if 'ON_HEROKU' in os.environ or 'PRODUCTION' in os.environ:
     application = DjangoWhiteNoise(application)
