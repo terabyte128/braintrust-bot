@@ -135,7 +135,7 @@ def send_command(args, chat_id, sender_username, update, sender):
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
 
-    last_photo = Photo.objects.filter(sender_username=sender_username, confirmed=False).order_by('-timestamp')
+    last_photo = Photo.objects.filter(sender_username=sender_username, confirmed=False, chat_id=chat_id).order_by('-timestamp')
 
     # confirm a photo
     if last_photo:
@@ -269,7 +269,12 @@ def send_command(args, chat_id, sender_username, update, sender):
         bot.sendMessage(chat_id=chat_id, text=quote, parse_mode="HTML")
 
     elif command == "getphoto" or command == "gp":
-        random_idx = random.randrange(0, Photo.objects.filter(chat_id=chat_id, confirmed=True).count())
+        count = Photo.objects.filter(chat_id=chat_id, confirmed=True).count()
+        if count == 0:
+            bot.sendMessage(chat_id=chat_id, text="😞 You don't have any photos yet! Try sending a photo and saving it "
+                                                  "with /sp")
+
+        random_idx = random.randrange(0, count)
         random_obj = Photo.objects.filter(chat_id=chat_id, confirmed=True)[random_idx]
         bot.sendPhoto(chat_id=chat_id, photo=random_obj.photo_id, caption=random_obj.caption)
 
