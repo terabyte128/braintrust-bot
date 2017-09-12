@@ -273,6 +273,7 @@ def send_command(args, chat_id, sender_username, update, sender):
         if count == 0:
             bot.sendMessage(chat_id=chat_id, text="😞 You don't have any photos yet! Try sending a photo and saving it "
                                                   "with /sp")
+            return
 
         random_idx = random.randrange(0, count)
         random_obj = Photo.objects.filter(chat_id=chat_id, confirmed=True)[random_idx]
