@@ -70,3 +70,9 @@ class EightBallAnswer(models.Model):
 
     def __str__(self):
         return self.answer + " @ " + str(self.chat_id)
+
+
+class QuiplashPrompt(models.Model):
+    prompt = models.TextField()
+    sender_username = models.TextField(max_length=100, null=True, blank=True)
+    chat_id = models.BigIntegerField(null=False, blank=False)

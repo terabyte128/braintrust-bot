@@ -17,7 +17,7 @@ import requests
 
 # Create your views here.
 from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember, Photo, \
-    EightBallAnswer
+    EightBallAnswer, QuiplashPrompt
 from django_braintrust_bot.settings import API_KEY
 
 # initialize the bot for all views
@@ -130,6 +130,8 @@ def add_photo(chat_id, sender, caption, photo_id, username):
 
 
 # function to handle all commands sent to the bot
+
+# sender is the sender's NAME
 def send_command(args, chat_id, sender_username, update, sender):
 
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
@@ -286,13 +288,7 @@ def send_command(args, chat_id, sender_username, update, sender):
 
         full_message = "%s\n\n%s" % (message_pieces[0], message_pieces[1])
 
-        message = bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML")
-
-        # this is hacky and not a good idea
-       # time.sleep(1)
-
-        # immediately edit the message
-       # bot.editMessageText(message_pieces[0], chat_id=chat_id, message_id=message.message_id, parse_mode="HTML")
+        bot.sendMessage(chat_id=chat_id, text=full_message, parse_mode="HTML")
 
     elif command == "listgroups" or command == "lg":
         groups = ChatGroup.objects.filter(chat_id=chat_id)
@@ -458,6 +454,18 @@ def send_command(args, chat_id, sender_username, update, sender):
         random_idx = random.randrange(0, EightBallAnswer.objects.filter(chat_id=chat_id).count())
         random_answer = EightBallAnswer.objects.filter(chat_id=chat_id)[random_idx]
         bot.sendMessage(chat_id=chat_id, text="<i>%s</i>" % random_answer.answer, parse_mode="HTML")
+
+    elif command == "quiplash":
+        prompt = " ".join(args[1:]).strip()
+
+        if prompt:
+            db_prompt = QuiplashPrompt(prompt=prompt, sender_username=sender_username, chat_id=chat_id)
+            db_prompt.save()
+            bot.sendMessage(chat_id=chat_id, text="👍 Quiplash prompt saved successfully.")
+
+        else:
+            bot.sendMessage(chat_id=chat_id, text="⚠️ Usage: /quiplash [new prompt]")
+
 
     # otherwise it's not a real command :(
     else:
