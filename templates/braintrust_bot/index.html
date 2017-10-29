@@ -2,21 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Braintrust Bot Management</title>
+    <title>BrainTrust Bot Management</title>
 </head>
 <body>
-    <table>
-        <thead>
-        <tr>
-            <th>Chat Members</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for chat in chats %}
-            {{ chat }}
-        {% endfor %}
+<h1>BrainTrust Bot Management</h1>
 
-        </tbody>
-    </table>
+{% if success %}
+<p style="color: darkgreen;">{{ success }}</p>
+{% elif error %}
+<p style="color: firebrick;">{{ error }}</p>
+{% endif %}
+
+<p>On this page, you can choose which chats you'd to associate Alexa devices with.</p>
+
+<h4 style="color: firebrick;">The following Alexa devices are unassociated:</h4>
+<table border="1">
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>Select Chat</th>
+        <th>Associate?</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for alexa in alexas %}
+    <form method="post">
+    {% csrf_token %}
+        <tr>
+            <td>
+                <input type="hidden" name="alexa_id" value="{{ alexa.id }}">
+                {{ alexa.device_user_id }}
+            </td>
+            <td>
+                <select name="chat_id" id="">
+                    {% for chat in chats %}
+                        <option value="{{ chat.id }}">{% if chat.name %}{{ chat.name }}{% else %}{{ chat.chat_id }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        <td>
+            <button type="submit">Associate!</button>
+        </td>
+        </tr>
+    </form>
+    {% endfor %}
+    </tbody>
+</table>
+
 </body>
 </html>

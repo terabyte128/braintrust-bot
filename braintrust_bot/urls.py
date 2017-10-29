@@ -16,4 +16,6 @@ urlpatterns = [
     url(r'^webhook', views.webhook, name="webbook"),
 
     url(r'^sign_out', views.sign_out, name="sign_out"),
+
+    url(r'^alexa', views.get_quote_alexa, name='get_quote_alexa')
 ]

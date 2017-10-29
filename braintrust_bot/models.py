@@ -41,6 +41,7 @@ class Photo(models.Model):
 
 
 class QuoteChat(models.Model):
+    name = models.TextField(null=True, blank=True)
     chat_id = models.BigIntegerField(null=False, blank=False, unique=True)
     quotes_enabled = models.BooleanField(default=False)
 
@@ -76,3 +77,8 @@ class QuiplashPrompt(models.Model):
     prompt = models.TextField()
     sender_username = models.TextField(max_length=100, null=True, blank=True)
     chat_id = models.BigIntegerField(null=False, blank=False)
+
+
+class Alexa(models.Model):
+    device_user_id = models.TextField(max_length=255, null=False, blank=False)
+    chat = models.ForeignKey(QuoteChat, blank=True, null=True)  # chat to which this alexa is associated

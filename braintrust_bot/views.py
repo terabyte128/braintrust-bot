@@ -4,12 +4,11 @@ import threading
 import traceback
 
 import telegram
-import time
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from braintrust_bot.memes import meme_ids
@@ -17,7 +16,7 @@ import requests
 
 # Create your views here.
 from braintrust_bot.models import ChatMember, QuoteChat, QuoteStorage, ChatGroup, ChatGroupMember, Photo, \
-    EightBallAnswer, QuiplashPrompt
+    EightBallAnswer, QuiplashPrompt, Alexa
 from django_braintrust_bot.settings import API_KEY
 
 # initialize the bot for all views
@@ -27,13 +26,65 @@ bot = telegram.Bot(token=API_KEY)
 # This page doesn't do much, just verify that the bot is working as expected
 @login_required
 def index(request):
-    chats = ChatGroup.objects.all()
-
     context = {
-        chats: chats
+        'alexas': Alexa.objects.filter(chat=None),
+        'chats': QuoteChat.objects.all()
     }
 
+    if request.method == "POST":
+        alexa_id = request.POST.get('alexa_id')
+        chat_id = request.POST.get('chat_id')
+
+        alexa = Alexa.objects.get(id=alexa_id)
+        chat = QuoteChat.objects.get(id=chat_id)
+
+        if alexa and chat:
+            alexa.chat = chat
+            alexa.save()
+
+            context['success'] = 'Your Alexa was updated.'
+        else:
+            context['error'] = 'Failed to update Alexa.'
+
     return render(request, 'braintrust_bot/index.html', context)
+
+@csrf_exempt
+def get_quote_alexa(request):
+    alexa_user_id = request.POST.get('alexa_user_id')
+
+    if not alexa_user_id:
+        return JsonResponse({
+            'text': 'The format of your request is incorrect.'
+        })
+
+    try:
+        alexa = Alexa.objects.get(device_user_id=alexa_user_id)
+    except Alexa.DoesNotExist:
+        alexa = None
+
+    if not alexa or alexa.chat is None:
+
+        if not alexa:  # create a new object if we don't have one
+            alexa = Alexa.objects.create(device_user_id=alexa_user_id)
+            alexa.save()
+
+        return JsonResponse({
+            'text': 'You need to register your Alexa device.'
+        })
+
+    else:
+        random_idx = random.randrange(0, QuoteStorage.objects.filter(chat_id=alexa.chat.chat_id).count())
+        quote = QuoteStorage.objects.filter(chat_id=alexa.chat.chat_id)[random_idx]
+
+        try:
+            capitalized = quote.text[0].upper() + quote.text[1:]
+        except IndexError:
+            capitalized = quote.text[0].upper()
+
+        return JsonResponse({
+            'text': '<emphasis>%s</emphasis><break time="500ms"/>%s %4d' % (capitalized, quote.author.title(),
+                                                                            quote.timestamp.year)
+        })
 
 
 def sign_out(request):
@@ -75,7 +126,8 @@ def webhook(request):
                     text = update['message']['text']
 
                     if text[0] == "/":
-                        send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update, sender)
+                        send_command(text[1:].split(" "), chat_id, update['message']['from']['username'], update,
+                                     sender)
 
                 # deal with photos separately
                 elif 'photo' in update['message']:
@@ -133,11 +185,11 @@ def add_photo(chat_id, sender, caption, photo_id, username):
 
 # sender is the sender's NAME
 def send_command(args, chat_id, sender_username, update, sender):
-
     # there might be @BrianTrustBot afterwards, so get rid of it if it exists
     command = args[0].split("@")[0]
 
-    last_photo = Photo.objects.filter(sender_username=sender_username, confirmed=False, chat_id=chat_id).order_by('-timestamp')
+    last_photo = Photo.objects.filter(sender_username=sender_username, confirmed=False, chat_id=chat_id).order_by(
+        '-timestamp')
 
     # confirm a photo
     if last_photo:
@@ -182,7 +234,8 @@ def send_command(args, chat_id, sender_username, update, sender):
         try:
             member = ChatMember.objects.get(username=member_str)
             member.delete()
-            bot.sendMessage(chat_id=chat_id, text="%s was successfully deleted from the global chat group." % member_str)
+            bot.sendMessage(chat_id=chat_id,
+                            text="%s was successfully deleted from the global chat group." % member_str)
         except ChatMember.DoesNotExist:
             bot.sendMessage(chat_id=chat_id, text="%s is not in the global chat group." % member_str)
 
@@ -202,7 +255,8 @@ def send_command(args, chat_id, sender_username, update, sender):
 
             quote_chat.quotes_enabled = (args[1] == "enable")
             quote_chat.save()
-            bot.sendMessage(chat_id=chat_id, text="Quotes %s." % ("enabled" if quote_chat.quotes_enabled else "disabled"))
+            bot.sendMessage(chat_id=chat_id,
+                            text="Quotes %s." % ("enabled" if quote_chat.quotes_enabled else "disabled"))
         else:
             bot.sendMessage(chat_id=chat_id, text="Usage: /quotes [enable/disable]")
 
@@ -387,8 +441,8 @@ def send_command(args, chat_id, sender_username, update, sender):
                 formatted_users = ["@" + user.username for user in members]
 
                 message_text = "<strong>%s</strong>: %s\n\n%s" \
-                           % (update['message']['from']['first_name'], message,
-                              " ".join(formatted_users))
+                               % (update['message']['from']['first_name'], message,
+                                  " ".join(formatted_users))
 
                 # go go gadget send message!
                 bot.sendMessage(chat_id=chat_id, text=message_text, parse_mode="HTML")
