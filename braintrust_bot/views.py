@@ -50,7 +50,9 @@ def index(request):
 
 @csrf_exempt
 def get_quote_alexa(request):
-    alexa_user_id = request.POST.get('alexa_user_id')
+    body = json.loads(request.body)
+
+    alexa_user_id = body['alexa_user_id']
 
     if not alexa_user_id:
         return JsonResponse({
