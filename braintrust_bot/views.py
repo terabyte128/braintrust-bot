@@ -82,7 +82,7 @@ def get_quote_alexa(request):
             capitalized = quote.text[0].upper()
 
         return JsonResponse({
-            'text': '<emphasis>%s</emphasis><break time="500ms"/>%s %4d' % (capitalized, quote.author.title(),
+            'text': '%s<break time="500ms"/>%s %4d' % (capitalized, quote.author.title(),
                                                                             quote.timestamp.year)
         })
 
