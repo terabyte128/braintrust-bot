@@ -81,7 +81,7 @@ def get_quote_alexa(request):
         except IndexError:
             capitalized = quote.text[0].upper()
 
-        if not capitalized.endswith(".")
+        if not capitalized.endswith("."):
             capitalized += "."
 
         return JsonResponse({
