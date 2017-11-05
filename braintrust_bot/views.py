@@ -81,6 +81,9 @@ def get_quote_alexa(request):
         except IndexError:
             capitalized = quote.text[0].upper()
 
+        if not capitalized.endswith(".")
+            capitalized += "."
+
         return JsonResponse({
             'text': '%s<break time="500ms"/>%s %4d' % (capitalized, quote.author.title(),
                                                                             quote.timestamp.year)
