@@ -320,8 +320,16 @@ def send_command(args, chat_id, sender_username, update, sender):
         bot.sendMessage(chat_id=chat_id, text="👍 Quote saved successfully.")
 
     elif command == "getquote" or command == "gq":
-        random_idx = random.randrange(0, QuoteStorage.objects.filter(chat_id=chat_id).count())
-        random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
+
+        if len(args) == 0:
+            random_idx = random.randrange(0, QuoteStorage.objects.filter(chat_id=chat_id).count())
+            random_obj = QuoteStorage.objects.filter(chat_id=chat_id)[random_idx]
+        elif len(args) == 1:
+            random_idx = random.randrange(0, QuoteStorage.objects.filter(author__icontains=args[1], chat_id=chat_id)
+                                          .count())
+            random_obj = QuoteStorage.objects.filter(author__icontains=args[1], chat_id=chat_id)[random_idx]
+        else:
+            return
 
         quote = generate_quote(random_obj)
 
